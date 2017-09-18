@@ -1,0 +1,31 @@
+package com.byth.lifesaver.function.card.activity;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+
+/**
+ * Created by Administrator on 2017/6/2 0002.
+ * 订单确认
+ */
+
+public class ActivityOrderConfirm extends FrameActivity {
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_order_confirm);
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+}

@@ -1,0 +1,250 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.RadioButtonAdapter;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.bean.CardRenewConfirmBean;
+import com.byth.lifesaver.bean.OrderSuccessBean;
+import com.byth.lifesaver.bean.PayForRenewBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.ImageLoaderUtil;
+import com.byth.lifesaver.widget.MyGridView;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/6/14 0014.
+ * 续费订单确认
+ */
+
+public class ActivityRenewCardConfirm extends FrameActivity implements RadioButtonAdapter.IRadioNumClickListener, View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.num_year)
+    MyGridView mgvNumYear;//年限选择器
+    @InjectView(R.id.total_price)
+    TextView tvTotalPrice;//总价
+    @InjectView(R.id.cardNum)
+    TextView tvCardNum;//卡号
+    @InjectView(R.id.ig_card)
+    ImageView igCard;//卡图片
+    @InjectView(R.id.goodsName)
+    TextView tvGoodsName;//商品名称
+    @InjectView(R.id.btn_pay_confirm)
+    Button btnPay;
+
+    private RadioButtonAdapter radioButtonAdapter;
+    private String goodsName;
+    private String cardNum;
+    private Integer goodsId;
+    private String imageUrl;
+    private double price;
+    private String orderCode;
+    private HttpSubscriber httpSubscriber;
+    private List<CardRenewConfirmBean.Cost> costList;
+    private Bundle bundle1 = new Bundle();
+    private PayForRenewBean.CardDto cardDto;
+    private PayForRenewBean.DetailDto detailDto;
+    private PayForRenewBean.OrderDto orderDto;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+        Bundle bundle = getIntent().getExtras();
+        goodsName = bundle.getString("goodsName");
+        cardNum = bundle.getString("cardNum");
+        goodsId = bundle.getInt("goodsId");
+        imageUrl = bundle.getString("imageUrl");
+    }
+
+    @Override
+    protected void initData() {
+        costList = new ArrayList<>();
+        bundle1.putString("goodsName", goodsName);
+        bundle1.putString("imageUrl", imageUrl);
+        cardDto = new PayForRenewBean.CardDto();
+        detailDto = new PayForRenewBean.DetailDto();
+        orderDto = new PayForRenewBean.OrderDto();
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_renew_card_confirm);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        radioButtonAdapter = new RadioButtonAdapter(this, 0);
+        mgvNumYear.setAdapter(radioButtonAdapter);
+        tvCardNum.setText(cardNum);
+        tvGoodsName.setText(goodsName);
+        ImageLoaderUtil.display(this, igCard, imageUrl);
+        getCardRenewConfirmInfo();
+    }
+
+    @Override
+    protected void initListener() {
+        radioButtonAdapter.registerOnClick(this);
+        btnPay.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(RadioButtonAdapter context, String numYear) {
+        for (int i = 0; i < costList.size(); i++) {
+            if (StringUtil.toInt(numYear.replaceAll("年", "")) == 1) {
+                price = costList.get(0).getYearPrice();
+            } else if (StringUtil.toInt(numYear.replaceAll("年", "")) == 2) {
+                price = costList.get(1).getYearPrice();
+            }
+        }
+        bundle1.putString("cardYear", numYear);
+        bundle1.putDouble("totalPrice", price);
+        orderDto.setSum(price);
+        detailDto.setYears(StringUtil.toInt(numYear.replaceAll("年", "")));
+        detailDto.setYearPrice(price);
+        tvTotalPrice.setText(String.valueOf(price));
+    }
+
+    /**
+     * 获取卡续费确认信息
+     */
+    private void getCardRenewConfirmInfo() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onNextListener);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("goodsId", goodsId);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        GoodsAPI.getInstance().getCardRenewConfirmInfo(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CardRenewConfirmBean> onNextListener = new SubscriberOnNextListener<CardRenewConfirmBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CardRenewConfirmBean cardRenewConfirmBean) {
+            hideLoadingDialog();
+            costList = cardRenewConfirmBean.getCostDtoList();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_pay_confirm:
+                if (price == 0) {
+                    showToast("请选择购买年限");
+                } else {
+                    payForRenew();//提交续卡订单
+                }
+                break;
+        }
+    }
+
+    /**
+     * 提交续卡订单
+     */
+    private void payForRenew() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onPayForRenewListener);
+        cardDto.setCardCode(cardNum);
+        orderDto.setOrderType("RENEW");
+        Map<Object, Object> map = new HashMap<>();
+        map.put("cardDto", cardDto);
+        map.put("orderDto", orderDto);
+        map.put("detailDto", detailDto);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        GoodsAPI.getInstance().payForRenew(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<OrderSuccessBean> onPayForRenewListener = new SubscriberOnNextListener<OrderSuccessBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(OrderSuccessBean orderSuccessBean) {
+            hideLoadingDialog();
+            orderCode = orderSuccessBean.getOrderCode();
+            bundle1.putString("orderCode", orderCode);
+            openActivityNotClose(ActivityChoosePayMethod.class, bundle1);
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    //解除订阅
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+}

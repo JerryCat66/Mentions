@@ -1,0 +1,242 @@
+package com.byth.lifesaver.function.mine.fragment;
+
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.OrderAPI;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.bean.OrderBean;
+import com.byth.lifesaver.function.mine.activity.ActivityOrderDetail;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.ImageLoaderUtil;
+import com.byth.lifesaver.util.LoadType;
+import com.byth.lifesaver.widget.refreshlayout.RefreshLayout;
+import com.fenguo.library.adapter.BaseAdapterHelper;
+import com.fenguo.library.adapter.QuickAdapter;
+import com.fenguo.library.adapter.recyclerview.UniversalAdapter;
+import com.fenguo.library.adapter.recyclerview.ViewHolder;
+import com.fenguo.library.util.JsonUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/6/12 0012.
+ * 全部订单fragment
+ * TODO
+ */
+
+public class FragmentOrderAll extends BaseFragment implements AdapterView.OnItemClickListener {
+    /* @InjectView(R.id.orderList)
+     RecyclerView orderList;*/
+    @InjectView(R.id.list)
+    ListView listView;
+    @InjectView(R.id.refresh)
+    RefreshLayout refreshLayout;
+    private HttpSubscriber httpSubscriber;
+    //private UniversalAdapter<OrderBean.data> adapter;
+    private QuickAdapter<OrderBean.data> adapter;
+    private List<OrderBean.data> data;
+    private String orderStatus;//订单状态
+    private Bundle bundle = new Bundle();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_my_order);
+        ButterKnife.inject(this, view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setRefreshLayout(refreshLayout);
+   /*     orderList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        orderList.setAdapter(adapter);*/
+        listView.setAdapter(adapter);
+        getOrderList();
+    }
+
+    @Override
+    protected void initListener() {
+        listView.setOnItemClickListener(this);
+        refreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
+            @Override
+            public void onPullDownToRefresh() {
+
+            }
+
+            @Override
+            public void onPullUpToRefresh() {
+
+            }
+        });
+    }
+
+
+    @Override
+    protected void immersionInit() {
+
+    }
+
+    /**
+     * 获取订单列表
+     */
+    private void getOrderList() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onGetOrderListNextListener);
+        orderStatus = "DEFAULT";
+        Map<String, String> map = new HashMap<>();
+        map.put("orderStatus", orderStatus);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        OrderAPI.getInstance().getOrderList(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<List<OrderBean.data>> onGetOrderListNextListener = new SubscriberOnNextListener<List<OrderBean.data>>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(List<OrderBean.data> orderBean) {
+            hideLoadingDialog();
+            data = orderBean;
+            Log.i(TAG, "onNext: ================>>>>>" + JsonUtil.toJson(data));
+            refreshDatas();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    /**
+     * 刷新数据
+     */
+    @Override
+    public void refreshDatas() {
+        super.refreshDatas();
+        if (loadType == LoadType.AddAll) {
+            adapter.addAll(data);
+        } else if (loadType == LoadType.ReplaceALL) {
+            adapter.replaceAll(data);
+        }
+    }
+
+    /**
+     * 解除订阅
+     */
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+
+    @Override
+    protected void initData() {
+        data = new ArrayList<>();
+       /* if (adapter == null) {
+            adapter = new UniversalAdapter<OrderBean.data>(getActivity(), R.layout.item_my_order, data) {
+                @Override
+                protected void convert(ViewHolder viewHolder, OrderBean.data data, int position) {
+                    viewHolder.setText(R.id.image_card, data.getImage())
+                            .setText(R.id.card_name, data.getGoodsName())
+                            .setText(R.id.card_year, "使用年限" + String.valueOf(data.getYears()) + "年")
+                            .setText(R.id.card_status, data.getOrderStatus())
+                            .setText(R.id.money_of_pay, "实付款:￥" + String.valueOf(data.getSum()) + "元");
+                    if (data.getOrderStatus().equals("CMPLD")) {
+                        viewHolder.setVisible(R.id.checkLogistic, false);
+                        viewHolder.setVisible(R.id.buy_again, true);
+                    } else if (data.getOrderStatus().equals("UNREV")) {
+                        viewHolder.setVisible(R.id.checkLogistic, true);
+                        viewHolder.setVisible(R.id.buy_again, false);
+                    } else if (data.getOrderStatus().equals("UNPAY")) {
+                        viewHolder.setVisible(R.id.checkLogistic, false);
+                        viewHolder.setVisible(R.id.buy_again, false);
+                    }
+                }
+            };
+        }*/
+        if (adapter == null) {
+            adapter = new QuickAdapter<OrderBean.data>(getActivity(), R.layout.item_my_order) {
+                @Override
+                protected void convert(BaseAdapterHelper helper, OrderBean.data data) {
+                    ImageView imageView = helper.getView(R.id.image_card);
+                    helper.setText(R.id.card_name, data.getGoodsName())
+                            .setText(R.id.card_year, "使用年限" + String.valueOf(data.getYears()) + "年")
+                            .setText(R.id.money_of_pay, "实付款:￥" + String.valueOf(data.getSum()) + "元");
+                    ImageLoaderUtil.display(getActivity(), imageView, data.getImage());
+                    if (data.getOrderStatus().equals("CMPLD")) {
+                        helper.setText(R.id.card_status, "已完成");
+                        helper.setVisible(R.id.checkLogistic, false);
+                        helper.setVisible(R.id.buy_again, true);
+                    } else if (data.getOrderStatus().equals("UNREV")) {
+                        helper.setText(R.id.card_status, "待收货");
+                        helper.setVisible(R.id.checkLogistic, true);
+                        helper.setVisible(R.id.buy_again, false);
+                    } else if (data.getOrderStatus().equals("UNPAY")) {
+                        helper.setText(R.id.card_status, "待付款");
+                        helper.setVisible(R.id.checkLogistic, false);
+                        helper.setVisible(R.id.buy_again, false);
+                    }
+                    bundle.putInt("id", data.getId());
+                }
+            };
+        }
+    }
+
+    /**
+     * 每条数据点击事件
+     *
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        openActivityNotClose(ActivityOrderDetail.class, bundle);
+    }
+}

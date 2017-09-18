@@ -1,0 +1,84 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.widget.DialogPopupBottom;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/15 0015.
+ * 账户管理
+ */
+
+public class ActivityAccountManager extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.account)
+    TextView tvAccount;//账户
+    @InjectView(R.id.modifyPassword)
+    TextView tvModifyPwd;//修改密码
+    @InjectView(R.id.modifyPhoneNum)
+    TextView tvModifyPhone;//修改手机号码
+    @InjectView(R.id.logout)
+    Button btnLogout;//退出登录
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_account_manager);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        tvModifyPwd.setOnClickListener(this);
+        tvModifyPhone.setOnClickListener(this);
+        btnLogout.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.modifyPhoneNum:
+                new DialogPopupBottom(this)
+                        .builder()
+                        .setTitle("请选择修改方式")
+                        .setCancelable(false)
+                        .setCanceledOnTouchOutside(false)
+                        .addSheetItem("原手机能接收验证码", DialogPopupBottom.SheetItemColor.Blue, new DialogPopupBottom.OnSheetItemClickListener() {
+                            @Override
+                            public void onClick(int which) {
+                                openActivityNotClose(ActivityModifyPhoneStepOne.class, null);
+                            }
+                        })
+                        .addSheetItem("原手机不能接收验证码", DialogPopupBottom.SheetItemColor.Blue, new DialogPopupBottom.OnSheetItemClickListener() {
+                            @Override
+                            public void onClick(int which) {
+                                openActivityNotClose(ActivityModifyWithPassword.class, null);
+                            }
+                        }).show();
+                break;
+        }
+    }
+}

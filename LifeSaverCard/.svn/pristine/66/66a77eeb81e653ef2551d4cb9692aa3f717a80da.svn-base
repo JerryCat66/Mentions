@@ -1,0 +1,62 @@
+package com.byth.lifesaver.function.home;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+
+import butterknife.ButterKnife;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ * 主页
+ */
+
+public class HomeFragment extends BaseFragment {
+    private volatile static HomeFragment homeFragment;
+
+    public HomeFragment() {
+
+    }
+
+    public static HomeFragment getInstance() {
+        if (homeFragment == null) {
+            synchronized (HomeFragment.class) {
+                if (homeFragment == null) {
+                    homeFragment = new HomeFragment();
+                }
+            }
+        }
+        return homeFragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_home);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+}

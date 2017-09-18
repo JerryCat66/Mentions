@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.byth.lifesaver.MainActivity">
+
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d6d6d6" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/main_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#43464d"
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/home"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="true"
+                android:drawableTop="@drawable/bg_home"
+                android:text="首页" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/emergency"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_emergency"
+                android:text="救援" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/card"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_card"
+                android:text="生命保" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/mine"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_mine"
+                android:text="我的" />
+        </RadioGroup>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,56 @@
+package com.byth.lifesaver.function.card.fragment;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+
+import butterknife.ButterKnife;
+
+/**
+ * Created by Administrator on 2017/6/1 0001.
+ * 详情第一页
+ */
+
+public class FragmentCardDetailPager extends BaseFragment {
+    public static FragmentCardDetailPager newInstance(Context context, int position) {
+        FragmentCardDetailPager f = new FragmentCardDetailPager();
+        return f;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_product_detail);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+}

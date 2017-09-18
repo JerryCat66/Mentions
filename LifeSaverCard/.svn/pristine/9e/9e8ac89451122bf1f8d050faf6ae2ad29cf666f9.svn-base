@@ -1,0 +1,9 @@
+package com.byth.lifesaver.function.auth;
+
+/**
+ * Created by Administrator on 2017/5/23 0023.
+ *登陆
+ */
+
+public class LoginActivity {
+}

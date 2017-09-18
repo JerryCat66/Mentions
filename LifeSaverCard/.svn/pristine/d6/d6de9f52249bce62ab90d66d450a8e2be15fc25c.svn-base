@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edName"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:hint="请输入姓名"
+            android:maxLength="8" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edName"
+            android:text="*姓名" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/edSex"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/icon_pull_down"
+            android:gravity="right|center"
+            android:hint="请选择性别"
+            android:maxLength="4" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edSex"
+            android:text="性别" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edIdNum"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:hint="请输入身份证或护照号码"
+            android:maxLength="18" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edIdNum"
+            android:text="*身份证/护照号码" />
+    </RelativeLayout>
+
+    <android.inputmethodservice.KeyboardView
+        android:id="@+id/keyboard_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/window_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:keyBackground="@color/white"
+        android:keyTextColor="#000"
+        android:keyTextSize="16sp"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edPhoneNum"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:hint="请输入手机号码"
+            android:inputType="number"
+            android:maxLength="11" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edPhoneNum"
+            android:text="*手机号码" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edAddress"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:hint="请输入地址"
+            android:maxLength="18" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edAddress"
+            android:text="联系地址" />
+    </RelativeLayout>
+</LinearLayout>

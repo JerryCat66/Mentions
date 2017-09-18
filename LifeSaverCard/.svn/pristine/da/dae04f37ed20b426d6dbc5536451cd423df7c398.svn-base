@@ -1,0 +1,55 @@
+package com.byth.lifesaver.function.emergency;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ */
+
+public class EmergencyFragment extends BaseFragment {
+    private volatile static EmergencyFragment fragment;
+
+
+    public static EmergencyFragment getInstance() {
+        if (fragment == null) {
+            synchronized (EmergencyFragment.class) {
+                if (fragment == null) {
+                    fragment = new EmergencyFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_emergency);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+}

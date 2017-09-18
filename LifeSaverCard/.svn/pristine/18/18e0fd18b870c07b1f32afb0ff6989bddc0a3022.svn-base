@@ -1,0 +1,179 @@
+package com.byth.lifesaver.function.card.fragment;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.ProductDetailViewPagerAdapter;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.bean.GoodInfoBean;
+import com.byth.lifesaver.bean.ProductDetailBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.UtilList;
+import com.byth.lifesaver.widget.WgtScrollView;
+import com.fenguo.library.util.JsonUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/1 0001.
+ * 详情第一页
+ */
+
+public class FragmentCardDetailPager extends BaseFragment {
+    @InjectView(R.id.lyt_top_detail)
+    LinearLayout pushTopToDetail;
+    @InjectView(R.id.rl_view)
+    LinearLayout rlView;
+    @InjectView(R.id.viewGroup)
+    LinearLayout mViewGroup;
+    @InjectView(R.id.my_scroll_view)
+    WgtScrollView myScrollView;
+    @InjectView(R.id.bot_tvnum)
+    TextView mCurNum;
+    @InjectView(R.id.viewpager)
+    ViewPager mViewPager;
+    @InjectView(R.id.bot_num)
+    TextView mTotalNum;
+    @InjectView(R.id.detail_goods_name)
+    TextView tvGoodsName;
+    @InjectView(R.id.card_price)
+    TextView tvPrice;
+    private ProductDetailBean productDetailBean;
+
+    private List<String> mPicList;//图片集和
+    private ProductDetailViewPagerAdapter adapter;//轮播适配器
+    private HttpSubscriber httpSubscriber;
+
+    public static FragmentCardDetailPager newInstance(Context context, int position) {
+        FragmentCardDetailPager f = new FragmentCardDetailPager();
+        return f;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_product_detail);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        mPicList = new ArrayList<String>();//图片地址
+        getProductDetail();
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    /**
+     * 获取商品详情
+     */
+    private void getProductDetail() {
+        myScrollView.setScroll(true);
+        pushTopToDetail.setVisibility(View.VISIBLE);
+        if (httpSubscriber != null) {
+            httpSubscriber.unsubscribe();
+        } else {
+            httpSubscriber = new HttpSubscriber<>(onNextListener);
+            Map<String, String> map = new HashMap<>();
+            GoodsAPI.getInstance().getGoodsInfo(httpSubscriber, map);
+        }
+    }
+
+    SubscriberOnNextListener<GoodInfoBean> onNextListener = new SubscriberOnNextListener<GoodInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(GoodInfoBean goodInfoBeanHttpResult) {
+            Log.i("msg", "the result is======>>>>" + JsonUtil.toJson(goodInfoBeanHttpResult));
+            tvGoodsName.setText(goodInfoBeanHttpResult.getGoodsName());
+            tvPrice.setText(String.valueOf(goodInfoBeanHttpResult.getOneYearPrice()) + "元");
+            mPicList.add(goodInfoBeanHttpResult.getImage() + "");
+            autoImageFlowTimer();
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    /**
+     * 顶部轮播图
+     */
+    @Nullable
+    public void autoImageFlowTimer() {
+        if (!UtilList.isEmpty(mPicList)) {
+            mViewGroup.setVisibility(View.VISIBLE);
+        }
+        if (mPicList != null) {
+            adapter = new ProductDetailViewPagerAdapter(getActivity(), mPicList, mViewPager, mCurNum, mTotalNum);
+            //动态设置轮播图的高度
+            WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+            int width = wm.getDefaultDisplay().getWidth();
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) rlView.getLayoutParams();
+            params.width = width;
+            params.height = width;
+            rlView.setLayoutParams(params);
+            mViewPager.setAdapter(adapter);// 轮播图 显示数据
+            mViewPager.setCurrentItem(0);
+        }
+    }
+}

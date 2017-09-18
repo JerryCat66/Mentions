@@ -1,0 +1,64 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.widget.refreshlayout.RefreshLayout;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/7/17 0017.
+ * 收货地址管理
+ */
+
+public class ActivityGoodsReceiptAddress extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.addressList)
+    RecyclerView addressList;
+    @InjectView(R.id.refresh_layout)
+    RefreshLayout refreshLayout;
+    @InjectView(R.id.btnCreateNewAddress)
+    AppCompatButton btnCreateNewAddress;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_receipt_address_manager);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .fitsSystemWindows(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        btnCreateNewAddress.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnCreateNewAddress:
+                openActivityNotClose(ActivityCreateNewAddress.class, null);
+                break;
+        }
+    }
+}

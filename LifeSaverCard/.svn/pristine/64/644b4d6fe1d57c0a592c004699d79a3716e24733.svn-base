@@ -1,0 +1,144 @@
+package com.byth.lifesaver.function.mine;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.function.mine.activity.ActivityAccountManager;
+import com.byth.lifesaver.function.mine.activity.ActivityMyOrder;
+import com.byth.lifesaver.function.mine.activity.ActivitySetting;
+import com.byth.lifesaver.function.mine.activity.ActivitySettlementAddress;
+import com.byth.lifesaver.util.LifeSaverStatusBarUtil;
+import com.fenguo.library.view.RoundImageViewWithBorder;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ * 我的
+ */
+
+public class MineFragment extends BaseFragment implements View.OnClickListener {
+    @InjectView(R.id.avatar)
+    RoundImageViewWithBorder ivAvatar;
+    @InjectView(R.id.nickname)
+    TextView tvNickName;
+    @InjectView(R.id.appBar)
+    AppBarLayout appBarLayout;
+    /* @InjectView(R.id.mine_icon_shopping_cart)
+     TextView tvShoppingCart;*/
+    @InjectView(R.id.mine_icon_manager)
+    TextView tvManager;
+    @InjectView(R.id.mine_icon_settlement)
+    TextView tvSettlement;
+    @InjectView(R.id.mine_icon_order)
+    TextView tvOrder;
+    @InjectView(R.id.mine_icon_setting)
+    TextView tvSetting;
+    @InjectView(R.id.collapsing_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolBar;
+    private volatile static MineFragment fragment;
+
+    public MineFragment() {
+
+    }
+
+
+    public static MineFragment getInstance() {
+        if (fragment == null) {
+            synchronized (MineFragment.class) {
+                if (fragment == null) {
+                    fragment = new MineFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_mine);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        LifeSaverStatusBarUtil.setStatusBarColorForCollapsingToolbar(getActivity(), appBarLayout, collapsingToolbarLayout, mToolBar, ContextCompat.getColor(getActivity(), R.color.color_main));
+        ivAvatar.setImageResource(R.drawable.avatar_default, Color.WHITE, 20, true);
+    }
+
+    @Override
+    protected void initListener() {
+//        tvShoppingCart.setOnClickListener(this);
+        tvManager.setOnClickListener(this);
+        tvSettlement.setOnClickListener(this);
+        tvOrder.setOnClickListener(this);
+        tvSetting.setOnClickListener(this);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .fitsSystemWindows(false)
+                .init();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+//            case R.id.mine_icon_shopping_cart:
+//                openActivityNotClose(ActivityShoppingCart.class, null);
+//                showToast("购物车暂未开放");
+//                break;
+            case R.id.mine_icon_manager:
+                openActivityNotClose(ActivityAccountManager.class, null);
+                break;
+            case R.id.mine_icon_settlement:
+                openActivityNotClose(ActivitySettlementAddress.class, null);
+                break;
+            case R.id.mine_icon_order:
+                openActivityNotClose(ActivityMyOrder.class, null);
+                break;
+            case R.id.mine_icon_setting:
+                openActivityNotClose(ActivitySetting.class, null);
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+}

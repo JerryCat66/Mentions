@@ -1,0 +1,33 @@
+package com.byth.lifesaver.http;
+
+
+import rx.Observable;
+import rx.Subscriber;
+
+/**
+ * Created by Administrator on 2017/6/20 0020.
+ * 登录注册等retrofitApi
+ */
+
+public class AuthRetrofitAPI extends HttpMethod {
+    private static volatile AuthRetrofitAPI authRetrofitAPI;
+    private HttpServiceRequest httpServiceRequest;
+
+    public static AuthRetrofitAPI getInstance() {
+        if (authRetrofitAPI == null) {
+            synchronized (AuthRetrofitAPI.class) {
+                if (authRetrofitAPI == null) {
+                    authRetrofitAPI = new AuthRetrofitAPI();
+                }
+            }
+        }
+        return authRetrofitAPI;
+    }
+
+    //获取验证码
+    public void getRegisterCodeWithRetrofit(Subscriber<HttpResult> subscriber, String mobileNo, String type) {
+        httpServiceRequest = retrofitBuild().create(HttpServiceRequest.class);
+        Observable observable = httpServiceRequest.registerCode(mobileNo, type).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+}

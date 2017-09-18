@@ -1,0 +1,54 @@
+package com.byth.lifesaver.function.card;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ */
+
+public class CardFragment extends BaseFragment {
+    private volatile static CardFragment fragment;
+
+    public static CardFragment getInstance() {
+        if (fragment == null) {
+            synchronized (CardFragment.class) {
+                if (fragment == null) {
+                    fragment = new CardFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_card);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+}

@@ -1,0 +1,56 @@
+package com.byth.lifesaver.function.mine;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.base.BaseFragment;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ */
+
+public class MineFragment extends BaseFragment {
+    private volatile static MineFragment fragment;
+
+    public MineFragment() {
+
+    }
+
+    public static MineFragment getInstance() {
+        if (fragment == null) {
+            synchronized (MineFragment.class) {
+                if (fragment == null) {
+                    fragment = new MineFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+}

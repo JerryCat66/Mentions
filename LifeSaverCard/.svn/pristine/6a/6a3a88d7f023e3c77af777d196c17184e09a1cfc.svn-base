@@ -1,0 +1,39 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="LoginButton">
+        <item name="android:background">@drawable/selector_login_button</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/font_large</item>
+    </style>
+
+    <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/checkbox</item>
+        <item name="android:paddingLeft">10.0dip</item>
+        <item name="android:minHeight">20.0dip</item>
+    </style>
+    <!--公用部分的style-->
+    <style name="RadioButtonStyle">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!--首页底部-->
+    <style name="MainBottomRadioButtonStyle" parent="RadioButtonStyle">
+        <item name="android:drawablePadding">0dip</item>
+        <item name="android:textColor">@drawable/main_bottom_select_color</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:paddingBottom">5dip</item>
+    </style>
+</resources>

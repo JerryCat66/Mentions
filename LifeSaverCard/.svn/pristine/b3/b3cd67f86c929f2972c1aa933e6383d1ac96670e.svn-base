@@ -1,0 +1,92 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/16 0016.
+ * 修改手机号码
+ * 原手机不能收到验证码
+ * 通过登录密码解除手机绑定
+ */
+
+public class ActivityModifyWithPassword extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.loginPassword)
+    EditText edPassword;
+    @InjectView(R.id.ok)
+    Button btnOk;
+    @InjectView(R.id.service_phone)
+    TextView tvServicePhone;
+    private String password;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_modify_with_password);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        btnOk.setOnClickListener(this);
+        tvServicePhone.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ok:
+                checkRequire();
+                break;
+            case R.id.service_phone:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        password = edPassword.getText().toString().trim();
+        if (StringUtil.isEmpty(password)) {
+            showToast("密码不能为空");
+        } else {
+            toNextStep();
+        }
+    }
+
+    /**
+     * 去到下一步
+     */
+    private void toNextStep() {
+        openActivityNotClose(ActivityModifyPhoneStepTwo.class, null);
+    }
+}
+

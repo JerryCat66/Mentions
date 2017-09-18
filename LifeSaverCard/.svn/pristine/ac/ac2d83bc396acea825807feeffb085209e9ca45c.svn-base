@@ -1,0 +1,174 @@
+package com.byth.lifesaver.wxapi;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.BaseApplication;
+import com.byth.lifesaver.bean.WxInfoBean;
+import com.byth.lifesaver.function.auth.UnionLoginActivity;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.Preference;
+import com.fenguo.library.view.DialogLoading;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/7/18 0018.
+ * 微信第三方操作
+ */
+
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
+    private HttpSubscriber httpSubscriber;
+    private BaseResp resp = null;
+    private String code;//微信返回的code
+    private String symbols;//判断是从app还是从网页端传入
+    private DialogLoading loading;
+    private String openid;
+    private Preference preference;
+    private int status;
+    private String session_id;
+    private int id;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        BaseApplication.iwxapi.handleIntent(getIntent(), this);
+        preference = Preference.getInstance();
+    }
+
+    //微信发送请求到第三方应用时，会回调到该方法
+    @Override
+    public void onReq(BaseReq baseReq) {
+        finish();
+    }
+
+    // 第三方应用发送到微信的请求处理后的响应结果，会回调到该方法
+    //app发送消息给微信，处理返回消息的回调
+    @Override
+    public void onResp(BaseResp baseResp) {
+        if (baseResp != null) {
+            resp = baseResp;
+        }
+        //根据返回的错误码，给予相应提示
+        switch (baseResp.errCode) {
+            case BaseResp.ErrCode.ERR_AUTH_DENIED:
+                Toast.makeText(this, "用户拒绝授权", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+            case BaseResp.ErrCode.ERR_USER_CANCEL:
+                Toast.makeText(this, "用户取消，授权失败", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+            case BaseResp.ErrCode.ERR_OK:
+                //拿到code，请求access_Token
+                code = ((SendAuth.Resp) resp).code;
+                symbols = "app";
+                getWxLoginInfo();
+                finish();
+                break;
+        }
+    }
+
+    //获取微信登录的用户信息
+    private void getWxLoginInfo() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+        httpSubscriber = new HttpSubscriber(onNextListener);
+        Map<String, String> map = new HashMap<>();
+        map.put("code", code);
+        map.put("symbols", symbols);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        GoodsAPI.getInstance().getWxLoginInfo(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<WxInfoBean> onNextListener = new SubscriberOnNextListener<WxInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(WxInfoBean wxInfoBean) {
+            hideLoadingDialog();
+            Intent intent = new Intent();
+            openid = wxInfoBean.getOpenid();
+            preference.putString(LifeSaverPreference.OPENID, openid);
+            status = wxInfoBean.getStatus();
+            session_id = wxInfoBean.getSession_id();
+            id = wxInfoBean.getId();
+            if (status != -1) {
+                intent.setClass(WXEntryActivity.this, MainActivity.class);
+                startActivity(intent);
+                preference.putString(LifeSaverPreference.SESSION_ID, session_id);
+                preference.putString(LifeSaverPreference.ID, String.valueOf(id));
+                overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+                finish();
+            } else {
+                intent.setClass(WXEntryActivity.this, UnionLoginActivity.class);
+                startActivity(intent);
+                overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+            }
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    private void showLoadingDialog() {
+        if (loading == null) {
+            loading = new DialogLoading(this);
+        }
+        if (!loading.isShowing()) {
+            loading.show();
+        }
+    }
+
+    public void hideLoadingDialog() {
+        if (loading != null) {
+            loading.dismiss();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hideLoadingDialog();
+    }
+}

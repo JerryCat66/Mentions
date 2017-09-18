@@ -1,0 +1,24 @@
+package com.byth.lifesaver.api.request;
+
+import com.byth.lifesaver.bean.DefaultAddressBean;
+import com.byth.lifesaver.bean.GoodInfoBean;
+import com.byth.lifesaver.http.HttpResult;
+
+import java.util.Map;
+
+import retrofit2.http.GET;
+import retrofit2.http.QueryMap;
+import rx.Observable;
+
+/**
+ * Created by Administrator on 2017/6/28 0028.
+ * 商品信息api
+ */
+
+public interface GoodServiceRequest {
+    @GET("card/goods")
+    Observable<HttpResult<GoodInfoBean>> getGoodsInfo(@QueryMap Map<String, String> map);
+
+    @GET("card/defAddress")
+    Observable<HttpResult<DefaultAddressBean>> getDefaultAddress(@QueryMap Map<String, String> map);
+}

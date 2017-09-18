@@ -1,0 +1,275 @@
+package com.byth.lifesaver.base;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
+
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.byth.lifesaver.util.LifeSaverUtil;
+import com.byth.lifesaver.util.LoadType;
+import com.fenguo.library.activity.base.BaseActivity;
+import com.fenguo.library.adapter.QuickAdapter;
+import com.fenguo.library.util.Preference;
+import com.fenguo.library.util.StringUtil;
+import com.fenguo.library.view.DialogLoading;
+import com.fenguo.library.view.refreshlayout.RefreshLayout;
+import com.fenguo.library.view.refreshlayout.RefreshLayoutDirection;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
+
+/**
+ * @Description
+ * @auth Lee
+ * @date 2015/6/1
+ */
+public abstract class FrameActivity extends BaseActivity {
+    /**
+     * 用于log的标志
+     */
+    protected final String TAG = "msg";
+    protected Preference preference;
+    private DialogLoading loading;
+    protected LifeSaverPreference lifeSaverPreference;
+    protected LifeSaverUtil lifeSaverUtil;
+    protected LoadType loadType;
+    /**
+     * 是否显示dialog
+     */
+    protected boolean showDialog;
+
+    /**
+     * 当前页
+     */
+    protected int pageNum;
+    /**
+     * 最大页
+     */
+    protected int maxPage;
+
+    protected RefreshLayout refreshLayout;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //AppManager.getAppManager().addActivity(this);
+        ((BaseApplication) getApplication()).activityList.add(this);
+        preference = Preference.getInstance();
+        lifeSaverUtil = LifeSaverUtil.getInstance(this);
+        loadType = LoadType.ReplaceALL;
+        showDialog = true;
+        pageNum = 1;
+        //注册EventBus
+        EventBus.getDefault().registerSticky(this);
+        receiveDataFromPreActivity();
+        initData();
+        initComponent();
+        initListener();
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        ButterKnife.inject(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    /**
+     * 获取子类的类名
+     */
+    public String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
+    /**
+     * 初始化toolbar
+     *
+     * @param toolbar
+     */
+    protected void setToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back);
+    }
+
+    /**
+     * 初始化RefreshLayout
+     *
+     * @param refreshLayout
+     */
+    protected void setRefreshLayout(RefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeResources(R.color.color_secondary);
+        this.refreshLayout = refreshLayout;
+    }
+
+    /**
+     * 刷新数据后，根据不同的状态进行对应的操作
+     *
+     * @param adapter
+     * @param datas
+     */
+    protected void setListViewStatus(QuickAdapter adapter, List datas) {
+        if (pageNum == maxPage) {
+            refreshLayout.setDirection(RefreshLayoutDirection.TOP);
+        } else {
+            refreshLayout.setDirection(RefreshLayoutDirection.BOTH);
+        }
+        if (loadType.getKey() == LoadType.AddAll.getKey()) {
+            adapter.addAll(datas);
+        } else {
+            adapter.replaceAll(datas);
+        }
+        if (refreshLayout != null && refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
+    }
+
+    /**
+     * 子类可重新该方法，用于刷新数据
+     */
+    public void refreshDatas() {
+        if (isFinishing()) {
+            return;
+        }
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 取消注册Eventbus
+        EventBus.getDefault().unregister(this);
+        ImmersionBar.with(this).destroy();
+    }
+
+
+    public void onEventMainThread(Object event) {
+
+    }
+
+
+    /**
+     * @return void 返回类型
+     * @Title: receiveDataFromPreActivity
+     * @Description: 接受上一个 activity传递的数据
+     */
+    protected abstract void receiveDataFromPreActivity();
+
+    /**
+     * @return void 返回类型
+     * @Title: initData
+     * @Description: 初始化数据
+     */
+    protected abstract void initData();
+
+    /**
+     * @return void 返回类型
+     * @Title: initComponent
+     * @Description:初始化图形界面
+     */
+    protected abstract void initComponent();
+
+    /**
+     * @return void 返回类型
+     * @Title: initListener
+     * @Description: 初始化监听器
+     */
+    protected abstract void initListener();
+
+    public void showLoadingDialog() {
+        if (loading == null) {
+            loading = new DialogLoading(this);
+        }
+        if (!loading.isShowing()) {
+            loading.show();
+        }
+
+    }
+
+    public void hideLoadingDialog() {
+        if (loading != null) {
+            loading.dismiss();
+        }
+    }
+
+    //拨打电话
+    public void telPhone(String mobile) {
+        if (StringUtil.isEmpty(mobile)) {
+            showToast("该客户暂未提供手机号码");
+            return;
+        }
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mobile));//跳转到拨号界面，同时传递电话号码
+        startActivity(dialIntent);
+    }
+
+   /* */
+
+    /**
+     * 复审判断
+     *
+     * @return
+     *//*
+    public boolean getReviewStatus(){
+        if(preference.getInt(LifeSaverPreference.MINE_PROFILE_IS_STATE) == ProfileExamine.Have.getKey()){
+            return true;
+        }
+        Toast.makeText(this,"审核不通过,无权限操作",Toast.LENGTH_SHORT).show();
+       return  false;
+    }*/
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            ((BaseApplication) getApplication()).activityList.remove(this);
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        ((BaseApplication) getApplication()).activityList.remove(this);
+        if (((BaseApplication) getApplication()).activityList.isEmpty()) {
+            close();
+        }
+    }
+
+    //关闭所有Activity
+    public void close() {
+        LinkedList<Activity> list = ((BaseApplication) getApplication()).activityList;
+        while (!list.isEmpty()) {
+            list.poll().finish();
+        }
+    }
+
+    //清除数据
+    private void savaData() {
+        boolean firstIn = preference.getBoolean(LifeSaverPreference.FIRST_IN);
+        String account = preference.getString(LifeSaverPreference.ACCOUNT);
+
+        preference.clearData();
+
+        preference.putString(LifeSaverPreference.ACCOUNT, account);
+        preference.putBoolean(LifeSaverPreference.FIRST_IN, firstIn);
+    }
+}

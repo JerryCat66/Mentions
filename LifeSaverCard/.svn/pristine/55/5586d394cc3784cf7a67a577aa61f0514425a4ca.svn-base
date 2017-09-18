@@ -1,0 +1,104 @@
+package com.byth.lifesaver.function.card;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.function.card.activity.ActivityCardDetail;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 生命宝卡片页面
+ */
+
+public class CardFragment extends BaseFragment implements View.OnClickListener {
+    @InjectView(R.id.card_icon_buy)
+    TextView tvBuy;
+    @InjectView(R.id.card_icon_active)
+    TextView tvActive;
+    @InjectView(R.id.card_icon_report_loss)
+    TextView tvReportLoss;
+    @InjectView(R.id.card_icon_renew)
+    TextView tvRenew;
+    private volatile static CardFragment fragment;
+
+    public static CardFragment getInstance() {
+        if (fragment == null) {
+            synchronized (CardFragment.class) {
+                if (fragment == null) {
+                    fragment = new CardFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_card);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+        tvBuy.setOnClickListener(this);
+        tvActive.setOnClickListener(this);
+        tvRenew.setOnClickListener(this);
+        tvReportLoss.setOnClickListener(this);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.card_icon_buy:
+                openActivityNotClose(ActivityCardDetail.class, null);
+                break;
+            case R.id.card_icon_active:
+                break;
+            case R.id.card_icon_renew:
+                break;
+            case R.id.card_icon_report_loss:
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+}

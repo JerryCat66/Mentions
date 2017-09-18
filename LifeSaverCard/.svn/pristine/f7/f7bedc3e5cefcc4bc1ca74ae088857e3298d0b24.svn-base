@@ -1,0 +1,198 @@
+package com.byth.lifesaver.adapter;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.bean.AdListBean;
+import com.byth.lifesaver.util.ADDownload;
+import com.fenguo.library.activity.WebViewActivity;
+import com.fenguo.library.util.DateUtil;
+
+
+import net.tsz.afinal.http.AjaxCallBack;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 图片轮播适配器
+ */
+
+public class ViewPagerAdapter extends PagerAdapter {
+    private ArrayList<String> adList = null;//广告图片列表
+    private Context mContext;
+    private SharedPreferences sp = null;
+    private String update = null;//上传广告的时间
+    private String url = null;//广告url
+    private String adName = null;//广告标题
+    public static int pageIndex = 0;//广告滚动位置索引
+    private int status;//从哪里进入的广告轮播
+    private List<AdListBean.Advertisement> list = new ArrayList<AdListBean.Advertisement>();
+
+    public ViewPagerAdapter(Context context, int status) {
+        this.mContext = context;
+        this.status = status;
+        adList = new ArrayList<>();
+        sp = context.getSharedPreferences("AD", Activity.MODE_PRIVATE);
+        if (!adList.isEmpty()) {
+            return;
+        } else {
+            getInitJudgeUpdate();
+        }
+    }
+
+    @Override
+    public int getCount() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+
+        ImageView img = (ImageView) object;
+        img.setImageBitmap(null);
+        container.removeView(img);
+    }
+
+    /**
+     * 初始化广告图片列表，并访问服务器端广告是否有更新
+     */
+    private void getInitJudgeUpdate() {
+        File file = getImageAddressDir();
+        String[] str = file.list();
+        for (String s : str) {
+            if (s.endsWith(".img")) {
+                adList.add(s);
+            }
+        }
+    }
+
+    /**
+     * 下载广告图片回调方法
+     */
+    private AjaxCallBack<File> downLoadAdImgCallBack = new AjaxCallBack<File>() {
+
+        @Override
+        public void onFailure(Throwable t, int errorNo, String strMsg) {
+            super.onFailure(t, errorNo, strMsg);
+            sp.edit().putString("UpdateTime" + status, "").commit();
+
+            System.out.println("--111->广告下载失败" + strMsg);
+        }
+
+        @Override
+        public void onSuccess(File t) {
+            super.onSuccess(t);
+            sp.edit().putString("UpdateTime" + status, DateUtil.parseToString(update, DateUtil.yyyyMMddHHmm)).commit();
+            sp.edit().putString("status", String.valueOf(status)).commit();
+
+            clear();
+
+            File file = getImageAddressDir();
+            String[] str = file.list();
+            for (String s : str) {
+                if (s.endsWith(".img"))
+                    adList.add(s);
+            }
+
+            System.out.println("--11->广告下载成功");
+        }
+    };
+
+    @Override
+    public Object instantiateItem(ViewGroup container, final int position) {
+
+        ImageView image = new ImageView(mContext);
+        image.setScaleType(ImageView.ScaleType.FIT_XY);
+        image.setImageResource(R.drawable.ad_de);
+
+        if (getAdListSize() > 0) {
+
+            String adName = adList.get(position % adList.size());
+            Bitmap b = BitmapFactory.decodeFile(getImageAddressDir() + File.separator + adName);
+            if (b == null) {
+
+                new ADDownload(image).download(getImageAddressDir().toString(), adName);
+            } else {
+
+                image.setImageBitmap(b);
+            }
+        }
+
+        container.addView(image);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //根据显示图片拿相对应的详情图片地址
+
+                if (adList.size() > 0) {
+                    String imageId = adList.get(position % adList.size());
+                    String _id = imageId.substring(imageId.indexOf("_") + 1, imageId.indexOf("."));
+                    for (AdListBean.Advertisement findPicture : list) {
+                        if (_id.equals(findPicture.getId() + "")) {
+                            Intent intent = new Intent(mContext, WebViewActivity.class);
+                            intent.putExtra("title", findPicture.getTitle());
+                            intent.putExtra("url", findPicture.getDetailUrl());
+                            mContext.startActivity(intent);
+                            break;
+                        }
+                    }
+                }
+
+            }
+        });
+
+        pageIndex = position;
+        return image;
+    }
+
+    /**
+     * 广告图片列表总数
+     *
+     * @return 数量
+     */
+    public int getAdListSize() {
+        return adList.size();
+    }
+
+    /**
+     * 图片保存地址
+     *
+     * @return
+     */
+    private File getImageAddressDir() {
+        return mContext.getDir("adimage" + status, Activity.MODE_PRIVATE);
+    }
+
+    /**
+     * 添加广告图片名字到列表
+     */
+    public void addItem(String str) {
+        adList.add(str);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 清除广告图片列表的所有数据
+     */
+    public void clear() {
+        adList.clear();
+        notifyDataSetChanged();
+    }
+}

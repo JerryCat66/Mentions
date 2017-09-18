@@ -1,0 +1,31 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+
+/**
+ * Created by Administrator on 2017/7/18 0018.
+ * 修改密码成功，清空账户密码，退出到登录界面
+ */
+
+public class ActivityModifyPasswordSuccess extends FrameActivity {
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_modify_psw_success);
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dip"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:textColor="@color/color_666666"
+        android:textSize="18sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/stroke_height"
+        android:background="@color/color_stroke" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/color_stroke"
+        android:dividerHeight="@dimen/stroke_height"
+        android:headerDividersEnabled="true"
+        android:textColor="@drawable/btn_buy"
+        android:background="@color/window_background"
+        android:listSelector="@color/white">
+
+    </ListView>
+
+</LinearLayout>

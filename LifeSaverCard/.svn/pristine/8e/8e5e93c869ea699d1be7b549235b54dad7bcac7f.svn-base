@@ -1,0 +1,98 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <!--Toolbar颜色-->
+        <item name="colorPrimary">@color/color_39d167</item>
+        <!--状态栏颜色-->
+        <item name="colorPrimaryDark">@color/color_393a3f</item>
+        <!--colorAccent 对应EditText编辑时、RadioButton选中、CheckBox等选中时的颜色。-->
+        <item name="colorAccent">@color/main_color</item>
+        <!--字体颜色-->
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+    <style name="Dialog" parent="@android:style/Theme.Dialog">
+
+        <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
+
+        <!-- 边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">false</item>
+        <!-- 无标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 背景透明 -->
+        <item name="android:windowBackground">@color/material_blue_grey_800</item>
+
+        <!-- 模糊 -->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="TransparentDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+
+    <style name="F0" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">@dimen/F1</item>
+        <item name="android:lineSpacingExtra">32dp</item>
+    </style>
+
+    <!--标题，文章详情标题等-->
+    <style name="F1">
+        <item name="android:textSize">@dimen/F1</item>
+        <item name="android:lineSpacingExtra">32dp</item>
+    </style>
+
+    <style name="F2">
+        <item name="android:textSize">@dimen/F2</item>
+        <item name="android:lineSpacingExtra">48dp</item>
+    </style>
+
+    <style name="F3">
+        <item name="android:textSize">@dimen/F3</item>
+        <item name="android:lineSpacingExtra">48dp</item>
+    </style>
+
+    <style name="F4">
+        <item name="android:textSize">@dimen/F4</item>
+        <item name="android:lineSpacingExtra">20dp</item>
+    </style>
+
+    <style name="F5">
+        <item name="android:textSize">@dimen/F5</item>
+        <item name="android:lineSpacingExtra">20dp</item>
+    </style>
+
+    <style name="F6">
+        <item name="android:textSize">@dimen/F6</item>
+        <item name="android:lineSpacingExtra">20dp</item>
+    </style>
+    <style name="page_title_str">
+        <item name="android:textSize">@dimen/text_size_18</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="page_title">
+        <item name="android:layout_height">@dimen/page_title_height</item>
+        <item name="android:background">@color/main_color</item>
+    </style>
+</resources>

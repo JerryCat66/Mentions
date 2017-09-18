@@ -1,0 +1,149 @@
+package com.byth.lifesaver.function.card;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.CardGridAdapter;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.function.card.activity.ActivityCardDetail;
+import com.byth.lifesaver.function.card.activity.ActivityCardInfoConfirm;
+import com.byth.lifesaver.function.card.activity.ActivityCardReissue;
+import com.byth.lifesaver.function.card.activity.ActivityRenewCard;
+import com.byth.lifesaver.function.card.activity.ActivityReportForLoss;
+import com.byth.lifesaver.widget.MyGridView;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 生命宝卡片页面
+ */
+
+public class CardFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+    @InjectView(R.id.card_grid)
+    MyGridView cardGrid;
+    @InjectView(R.id.out_of_date)
+    TextView tvOutOfDate;
+    @InjectView(R.id.state_card)
+    TextView tvState;
+    @InjectView(R.id.user_name)
+    TextView tvUserName;
+    @InjectView(R.id.bind_phone)
+    TextView tvPhone;
+    @InjectView(R.id.id_num)
+    TextView tvIdNum;
+    @InjectView(R.id.type_blood)
+    TextView tvTypeBlood;
+    @InjectView(R.id.allergy_drug)
+    TextView tvAllergyDrug;
+    @InjectView(R.id.medical_history)
+    TextView tvMedicalHistory;
+    @InjectView(R.id.num_card)
+    TextView tvNumCard;
+    @InjectView(R.id.introduce_card)
+    TextView tvIntroduceCard;
+    @InjectView(R.id.introduce_use)
+    TextView tvIntroduceUse;
+    private CardGridAdapter adapter;
+    private volatile static CardFragment fragment;
+
+    public static CardFragment getInstance() {
+        if (fragment == null) {
+            synchronized (CardFragment.class) {
+                if (fragment == null) {
+                    fragment = new CardFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_card);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        adapter = new CardGridAdapter(getActivity());
+        cardGrid.setAdapter(adapter);
+        tvOutOfDate.setText("失效时间:");
+        tvUserName.setText("使用人:");
+        tvPhone.setText("绑定手机:");
+        tvIdNum.setText("身份证:");
+        tvTypeBlood.setText("血型:");
+        tvAllergyDrug.setText("过敏药物:");
+        tvMedicalHistory.setText("病史:");
+        tvNumCard.setText("卡号");
+    }
+
+    @Override
+    protected void initListener() {
+        tvIntroduceCard.setOnClickListener(this);
+        tvIntroduceUse.setOnClickListener(this);
+        cardGrid.setOnItemClickListener(this);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.introduce_card:
+                break;
+            case R.id.introduce_use:
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                openActivityNotClose(ActivityCardDetail.class, null);//购买
+                break;
+            case 1://激活
+                openActivityNotClose(ActivityCardInfoConfirm.class, null);
+                break;
+            case 2://续费
+                openActivityNotClose(ActivityRenewCard.class, null);
+                break;
+            case 3://补办
+                openActivityNotClose(ActivityCardReissue.class, null);
+                break;
+        }
+    }
+}

@@ -1,0 +1,183 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.CheckBoxAdapter;
+import com.byth.lifesaver.adapter.RadioButtonAdapter;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.widget.DialogWithList;
+import com.byth.lifesaver.widget.MyGridView;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/12 0012.
+ * 使用人信息填写
+ * TODO
+ */
+
+public class ActivityCardUserInfo extends FrameActivity implements CheckBoxAdapter.RemarkClickListener, RadioButtonAdapter.IRadioNumClickListener
+        , View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.edName)
+    EditText edName;
+    @InjectView(R.id.edSex)
+    TextView edSex;
+    @InjectView(R.id.edIdNum)
+    EditText edIdNum;
+    @InjectView(R.id.edAddress)
+    EditText edAddress;
+    @InjectView(R.id.edPhoneNum)
+    EditText edPhoneNum;
+    @InjectView(R.id.edEmergencyName)
+    EditText edEmergencyName;
+    @InjectView(R.id.edEmergencyPhone)
+    EditText edEmergencyPhone;
+    @InjectView(R.id.edRelationShip)
+    TextView edRelationShip;
+    @InjectView(R.id.bloodType)
+    MyGridView mgvBloodType;
+    @InjectView(R.id.medicalHistory)
+    MyGridView mgvMedicalHistory;
+    @InjectView(R.id.others)
+    EditText edOthers;
+    @InjectView(R.id.drugAllergy)
+    MyGridView mgvDrugAllergy;
+    @InjectView(R.id.others_allergy)
+    EditText edOthersAllergy;
+    @InjectView(R.id.btn_next_step)
+    Button btnNextStep;
+    private String bloodType;
+    private List<String> medicalList = new ArrayList<>();
+    private List<String> allergyList = new ArrayList<>();
+
+    private RadioButtonAdapter radioButtonAdapter;
+    private CheckBoxAdapter checkBoxAdapterMedical;
+    private CheckBoxAdapter checkBoxAdapterAllergy;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_user_infomation);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        checkBoxAdapterMedical = new CheckBoxAdapter(this, 0);
+        checkBoxAdapterAllergy = new CheckBoxAdapter(this, 1);
+        radioButtonAdapter = new RadioButtonAdapter(this, 1);
+        mgvBloodType.setAdapter(radioButtonAdapter);
+        mgvMedicalHistory.setAdapter(checkBoxAdapterMedical);
+        mgvDrugAllergy.setAdapter(checkBoxAdapterAllergy);
+    }
+
+    @Override
+    protected void initListener() {
+        radioButtonAdapter.registerOnClick(this);
+        checkBoxAdapterAllergy.registerOnClickRemark(this);
+        checkBoxAdapterMedical.registerOnClickRemark(this);
+        btnNextStep.setOnClickListener(this);
+        edSex.setOnClickListener(this);
+        edRelationShip.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(CheckBoxAdapter context, String remarkStr, List<String> datas) {
+        this.medicalList = datas;
+        this.allergyList = datas;
+    }
+
+    @Override
+    public void onClick(RadioButtonAdapter context, String numYear) {
+        this.bloodType = numYear;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.edSex:
+                lifeSaverUtil.showDialogList(this, R.array.choose_sex, "请选择性别", new DialogWithList.OnSelectedListener() {
+                    @Override
+                    public void setOnSelectedListener(int position, String content) {
+                        edSex.setText(content);
+                    }
+                });
+                break;
+            case R.id.edRelationShip:
+                lifeSaverUtil.showDialogList(this, R.array.choose_relationship, "请选择关系", new DialogWithList.OnSelectedListener() {
+                    @Override
+                    public void setOnSelectedListener(int position, String content) {
+                        edRelationShip.setText(content);
+                    }
+                });
+                break;
+            case R.id.btn_next_step:
+                checkIsNull();
+                break;
+        }
+    }
+
+    /**
+     * 检查输入的各个必填项是否为空
+     */
+    private void checkIsNull() {
+        String userName = edName.getText().toString().trim();
+        String sex = edSex.getText().toString().trim();
+        String idNum = edIdNum.getText().toString().trim();
+        String phoneNum = edPhoneNum.getText().toString().trim();
+        String emergencyName = edEmergencyName.getText().toString().trim();
+        String emergencyPhone = edEmergencyPhone.getText().toString().trim();
+        String relationShip = edRelationShip.getText().toString().trim();
+        if (StringUtil.isEmpty(userName)) {
+            showToast("请输入姓名");
+        } else if (StringUtil.isEmpty(sex)) {
+            showToast("请选择性别");
+        } else if (StringUtil.isEmpty(idNum)) {
+            showToast("请输入身份证号码");
+        } else if (StringUtil.isEmpty(phoneNum)) {
+            showToast("请输入电话号码");
+        } else if (StringUtil.isEmpty(emergencyName)) {
+            showToast("请输入紧急联系人姓名");
+        } else if (StringUtil.isEmpty(emergencyPhone)) {
+            showToast("请输入紧急联系人号码");
+        } else if (StringUtil.isEmpty(relationShip)) {
+            showToast("请输入关系");
+        } else if (StringUtil.isEmpty(bloodType)) {
+            showToast("请选择血型");
+        } else if (medicalList.size() == 0 || medicalList.isEmpty()) {
+            showToast("请选择是否有病史");
+        } else if (allergyList.size() == 0 || allergyList.isEmpty()) {
+            showToast("请选择是否有药物过敏史");
+        } else {
+            toActiveCard();
+        }
+    }
+
+    /**
+     * 确认填写信息无误的话进入下一步激活卡片
+     */
+    private void toActiveCard() {
+
+    }
+}

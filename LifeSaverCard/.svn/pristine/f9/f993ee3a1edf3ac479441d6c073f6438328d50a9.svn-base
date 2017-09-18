@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/card_default" />
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <EditText
+                    android:id="@+id/ed_card_type"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/btn_detail"
+                    android:gravity="right|center"
+                    android:hint="请选择卡类型"
+                    android:maxLength="4" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:layout_alignTop="@id/ed_card_type"
+                    android:text="卡类型" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tv_card_renew_num"
+                    style="@style/ProfileContentStyle"
+                    android:gravity="right|center"
+                    android:hint="66666666666"
+                    android:maxLength="4" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:layout_alignTop="@id/tv_card_renew_num"
+                    android:text="续费卡号" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@color/white"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/userName"
+                    style="@style/CardRenewTextView"
+                    android:text="使用人:张三" />
+
+                <TextView
+                    android:id="@+id/bindPhone"
+                    style="@style/CardRenewTextView"
+                    android:layout_alignParentRight="true"
+                    android:paddingRight="10dp"
+                    android:text="绑定手机:18688888888" />
+
+                <TextView
+                    android:id="@+id/idNum"
+                    style="@style/CardRenewTextView"
+                    android:layout_below="@+id/userName"
+                    android:paddingTop="10dp"
+                    android:text="身份证:548447874454454" />
+
+                <TextView
+                    android:id="@+id/deadTime"
+                    style="@style/CardRenewTextView"
+                    android:layout_below="@+id/idNum"
+                    android:layout_marginTop="10dp"
+                    android:text="失效时间:20178478" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_next_step"
+        style="@style/LoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="12dp"
+        android:text="下一步" />
+</RelativeLayout>

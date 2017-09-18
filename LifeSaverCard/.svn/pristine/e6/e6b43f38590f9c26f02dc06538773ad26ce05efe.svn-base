@@ -1,0 +1,124 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.RadioButtonAdapter;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.widget.MyGridView;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/2 0002.
+ * 订单确认
+ */
+
+public class ActivityOrderConfirm extends FrameActivity implements View.OnClickListener, RadioButtonAdapter.IRadioNumClickListener {
+    @InjectView(R.id.num_year)
+    MyGridView numYears;//年限选择
+    @InjectView(R.id.price_card)
+    TextView tvPrice;//卡片价格
+    @InjectView(R.id.ig_card)
+    ImageView ivCard;//图片
+    @InjectView(R.id.trade_btn_num_reduce)
+    ImageButton ibReduce;//减少按钮
+    @InjectView(R.id.trade_btn_num_raise)
+    ImageButton ibRaise;//增加按钮
+    @InjectView(R.id.trade_edit_num_input)
+    TextView tvNum;//数量
+    @InjectView(R.id.total_price)
+    TextView tvTotalPrice;
+    @InjectView(R.id.btn_pay_confirm)
+    AppCompatButton btnConfirm;
+    @InjectView(R.id.info_customer)
+    LinearLayout llContact;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    private RadioButtonAdapter adapter;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_order_confirm);
+        setToolbar(mToolbar);
+        adapter = new RadioButtonAdapter(this);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        numYears.setAdapter(adapter);
+    }
+
+    @Override
+    protected void initListener() {
+        ibRaise.setOnClickListener(this);
+        ibReduce.setOnClickListener(this);
+        btnConfirm.setOnClickListener(this);
+        llContact.setOnClickListener(this);
+        adapter.registerOnClick(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String num = tvNum.getText().toString().trim();
+        double result = StringUtil.toDouble(num);
+        double price = 1600;
+        switch (v.getId()) {
+            case R.id.trade_btn_num_raise:
+                double finalResult = ++result;
+                tvNum.setText(String.valueOf(finalResult));
+                double allPrice = price * finalResult;
+                tvTotalPrice.setText("总额:" + String.valueOf(allPrice) + "元");
+                break;
+            case R.id.trade_btn_num_reduce:
+                if (result <= 1) {
+                    showToast("商品数量不能小于1");
+                } else {
+                    double finalResult2 = --result;
+                    tvNum.setText(String.valueOf(finalResult2));
+                    double allPrice2 = price * finalResult2;
+                    tvTotalPrice.setText("总额:" + String.valueOf(allPrice2) + "元");
+                }
+                break;
+            case R.id.btn_pay_confirm:
+                checkRequire();
+                break;
+            case R.id.info_customer:
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        openActivityNotClose(ActivityChoosePayMethod.class, null);
+    }
+
+    @Override
+    public void onClick(RadioButtonAdapter context, String numYear) {
+        String num = tvNum.getText().toString().trim();
+        double result = StringUtil.toDouble(num);
+        double price = 1600;
+        double total = result * price;
+        tvTotalPrice.setText("总额:" + String.valueOf(total) + "元");
+    }
+}

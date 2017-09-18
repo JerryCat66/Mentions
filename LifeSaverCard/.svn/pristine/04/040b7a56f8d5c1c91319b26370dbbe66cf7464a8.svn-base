@@ -1,0 +1,40 @@
+package com.byth.lifesaver.base;
+
+import android.app.Activity;
+import android.app.Application;
+import android.support.multidex.MultiDexApplication;
+
+import com.facebook.stetho.Stetho;
+import com.fenguo.library.http.VolleyUtil;
+import com.fenguo.library.util.Preference;
+
+import java.util.LinkedList;
+
+public class BaseApplication extends MultiDexApplication {
+    public LinkedList<Activity> activityList = new LinkedList<Activity>();
+    private static Application application;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        application = this;
+        //初始化Preference
+        Preference.instance(this);
+        //初始化volley
+        VolleyUtil.init(this);
+        // 初始ImageLoader
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
+    }
+
+    public static Application getContext()
+
+    {
+        return application;
+    }
+}

@@ -1,0 +1,58 @@
+[
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\pic_dir.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\pic_dir.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\tips.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\tips.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\btn_detail.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\btn_detail.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\top_bg.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\top_bg.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\save.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\save.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\pictures_take.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\pictures_take.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\pictures_no.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\pictures_no.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\picture_unselected.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\picture_unselected.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\title_back_img.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\title_back_img.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\ic_launcher.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\pictures_selected.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\pictures_selected.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\dir_choose.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\dir_choose.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\ic_action_back.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\ic_action_back.png"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\divider.9.png",
+        "source": "D:\\AndroidProjects\\LifeSaver\\quicklibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\divider.9.png"
+    }
+]

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ef6b07</color>
+    <color name="colorPrimaryDark">#393a3f</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_secondary">#f79e3c</color>
+    <color name="role_yellow_gray">#48CFAD</color>
+    <color name="color_main">#ef6b07</color>
+
+    <color name="service_border">#dddddd</color>
+    <color name="color_price">#ff0000</color>
+    <color name="color_stroke">#d6d6d6</color>
+
+    <!--购物车-->
+    <color name="color_shopping_cart">#555555</color>
+    <color name="color_shopping_cart_bottom">#ef000000</color>
+    <color name="window_background">#f6f6f6</color>
+
+    <!--颜色值-&#45;&#45;根据color+颜色值组成-->
+    <color name="color_666666">#666666</color>
+    <color name="color_cccccc">#cccccc</color>
+    <color name="color_f7f7f7">#f7f7f7</color>
+    <color name="color_000000">#000000</color>
+    <color name="color_999999">#999999</color>
+    <color name="color_333333">#333333</color>
+</resources>

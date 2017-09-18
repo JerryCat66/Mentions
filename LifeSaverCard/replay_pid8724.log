@@ -1,0 +1,6 @@
+JvmtiExport can_access_local_variables 0
+JvmtiExport can_hotswap_or_post_breakpoint 0
+JvmtiExport can_post_on_exceptions 0
+# 174 ciObject found
+ciMethod java/lang/Object <init> ()V 757 13 1 0 -1
+instanceKlass com/sun/org/apache/xerces/internal/xs/PSVIProvider

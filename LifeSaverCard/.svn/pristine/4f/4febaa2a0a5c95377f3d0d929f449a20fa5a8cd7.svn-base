@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="20dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:background="@drawable/bg_fragment_card" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/card_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="生命宝航空救援卡"
+                    android:textColor="@color/color_main_text_black"
+                    android:textSize="18sp" />
+
+
+                <TextView
+                    android:id="@+id/out_of_date"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/card_name"
+                    android:text="失效时间:2020年6月6日" />
+
+                <TextView
+                    android:id="@+id/state_card"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/card_name"
+                    android:layout_toRightOf="@+id/out_of_date"
+                    android:text="即将失效"
+                    android:textColor="@color/color_price"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/out_of_date"
+                    android:text="使用人：张三" />
+
+                <TextView
+                    android:id="@+id/bind_phone"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/out_of_date"
+                    android:layout_toRightOf="@+id/user_name"
+                    android:text="绑定手机:1868888888" />
+
+                <TextView
+                    android:id="@+id/id_num"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/user_name"
+                    android:text="身份证：545154545454554" />
+
+                <TextView
+                    android:id="@+id/type_blood"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/id_num"
+                    android:text="血型:O型" />
+
+                <TextView
+                    android:id="@+id/allergy_drug"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/type_blood"
+                    android:maxEms="10"
+                    android:singleLine="true"
+                    android:text="过敏药物:大方的说法都是官方" />
+
+                <TextView
+                    android:id="@+id/medical_history"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/type_blood"
+                    android:layout_toRightOf="@+id/allergy_drug"
+                    android:maxEms="10"
+                    android:singleLine="true"
+                    android:text="病史:大方的说法都是官方" />
+
+                <TextView
+                    android:id="@+id/num_card"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_below="@+id/allergy_drug"
+                    android:text="卡号：0012345684747" />
+
+                <TextView
+                    android:id="@+id/card_detail"
+                    style="@style/TextViewOfTheCardView"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/allergy_drug"
+                    android:layout_marginRight="10dp"
+                    android:text="详情>"
+                    android:textColor="@color/colorPrimary" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/card_item_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

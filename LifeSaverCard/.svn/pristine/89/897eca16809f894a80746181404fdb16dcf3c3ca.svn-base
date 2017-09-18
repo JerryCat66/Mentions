@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edEmergencyName"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:hint="请输入紧急联系人姓名"
+            android:maxLength="8" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edEmergencyName"
+            android:text="*紧急联系人" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/edEmergencyPhone"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:gravity="right|center"
+            android:inputType="number"
+            android:hint="请输入紧急联系人电话"
+            android:maxLength="11" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edEmergencyPhone"
+            android:text="*紧急联系人电话" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/edRelationShip"
+            style="@style/ProfileContentStyle"
+            android:background="@null"
+            android:drawablePadding="5dp"
+            android:drawableRight="@drawable/btn_detail"
+            android:gravity="right|center"
+            android:hint="请选择与持卡人之间的关系"
+            android:maxLength="8" />
+
+        <TextView
+            style="@style/ProfileLabelStyle"
+            android:layout_alignTop="@id/edRelationShip"
+            android:text="*与持卡人关系" />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,154 @@
+package com.byth.lifesaver.function.auth;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v7.widget.AppCompatButton;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/23 0023.
+ * 登陆
+ */
+
+public class LoginActivity extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.btn_login)
+    AppCompatButton btn_login;
+    @InjectView(R.id.tv_signUp)
+    TextView tv_signUp;
+    @InjectView(R.id.input_account)
+    EditText edAccount;
+    @InjectView(R.id.input_password)
+    EditText edPassword;
+    @InjectView(R.id.sv_root)
+    ScrollView svRoot;
+    @InjectView(R.id.tv_forgetPsw)
+    TextView tv_ForgetPsw;
+    @InjectView(R.id.hot_line)
+    TextView tvHotLine;
+    private Context mContext;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_login);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.transparent)
+                .init();
+        //高斯模糊背景
+        mContext = this;
+        applyBlur();
+    }
+
+    @Override
+    protected void initListener() {
+        btn_login.setOnClickListener(this);
+        tv_signUp.setOnClickListener(this);
+        tv_ForgetPsw.setOnClickListener(this);
+        tvHotLine.setOnClickListener(this);
+        if (!StringUtil.isEmpty(preference.getString(LifeSaverPreference.ACCOUNT))) {
+            edAccount.setText(preference.getString(LifeSaverPreference.ACCOUNT));
+        }
+        if (!StringUtil.isEmpty(preference.getString(LifeSaverPreference.PASSWORD))) {
+            edPassword.setText(preference.getString(LifeSaverPreference.PASSWORD));
+        }
+    }
+
+    private void applyBlur() {
+        Drawable db = getResources().getDrawable(R.drawable.bg_login);
+        BitmapDrawable drawable = (BitmapDrawable) db;
+        Bitmap bgBitmap = drawable.getBitmap();
+        //处理得到模糊效果的图
+        RenderScript renderScript = RenderScript.create(mContext);
+        // Allocate memory for Renderscript to work with
+        final Allocation input = Allocation.createFromBitmap(renderScript, bgBitmap);
+        final Allocation output = Allocation.createTyped(renderScript, input.getType());
+        // Load up an instance of the specific script that we want to use.
+        ScriptIntrinsicBlur scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+        scriptIntrinsicBlur.setInput(input);
+        // Set the blur radius
+        scriptIntrinsicBlur.setRadius(25);
+        // Start the ScriptIntrinisicBlur
+        scriptIntrinsicBlur.forEach(output);
+        // Copy the output to the blurred bitmap
+        output.copyTo(bgBitmap);
+        renderScript.destroy();
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bgBitmap);
+        svRoot.setBackground(bitmapDrawable);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_login:
+                checkRequire();
+                break;
+            case R.id.tv_signUp:
+                openActivityNotClose(RegisterActivity.class, null);
+                break;
+            case R.id.tv_forgetPsw:
+                openActivityNotClose(ForgetPswStep1Activity.class, null);
+                break;
+            case R.id.hot_line://公司电话
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        String account = edAccount.getText().toString();
+        String password = edPassword.getText().toString();
+        if (StringUtil.isEmpty(account)) {
+            showToast("账号不能为空");
+        } else if (StringUtil.isEmpty(password)) {
+            showToast("密码不能为空");
+        } else {
+            login(account, password);
+        }
+    }
+
+    /**
+     * 登录
+     *
+     * @param account
+     * @param password
+     */
+    private void login(String account, String password) {
+        if (account.equals("robot") && password.equals("123456")) {
+            preference.putString(LifeSaverPreference.ACCOUNT, account);
+            preference.putString(LifeSaverPreference.PASSWORD, password);
+            openActivity(MainActivity.class, null);
+        } else {
+            showToast("账号或者密码错误");
+        }
+    }
+}

@@ -1,0 +1,71 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.fenguo.library.view.refreshlayout.RefreshLayout;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/7 0007.
+ * 购物车
+ */
+
+public class ActivityShoppingCart extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.refresh_layout)
+    RefreshLayout mRefresh;
+    @InjectView(R.id.list)
+    ListView listView;
+    @InjectView(R.id.shopping_cart_no_data)
+    LinearLayout llNoData;//列表为空
+    @InjectView(R.id.cBoxAgree)
+    CheckBox cbChooseAll;//全选
+    @InjectView(R.id.txtViewPrice)
+    TextView tvTotal;//合计
+    @InjectView(R.id.txtViewSettlement)
+    TextView tvSettlement;//结算
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+        mRefresh.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
+            @Override
+            public void onPullDownToRefresh() {
+
+            }
+
+            @Override
+            public void onPullUpToRefresh() {
+
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+}

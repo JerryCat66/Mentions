@@ -1,0 +1,85 @@
+package com.byth.lifesaver.function.auth;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/27 0027.
+ */
+
+public class ForgetPswStep2Activity extends FrameActivity {
+    @InjectView(R.id.sv_root)
+    LinearLayout svRoot;
+    @InjectView(R.id.input_password)
+    EditText edPassword;
+    @InjectView(R.id.input_password_confirm)
+    EditText edPassword_Confirm;
+    @InjectView(R.id.phone_num)
+    TextView tvPhoneNum;
+    private Context mContext;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_forget_psw_step2);
+        ImmersionBar.with(this)
+                .navigationBarColor(R.color.transparent)
+                .statusBarColor(R.color.transparent)
+                .init();
+        //高斯模糊背景
+        mContext = this;
+        applyBlur();
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    private void applyBlur() {
+        Drawable db = getResources().getDrawable(R.drawable.bg_login);
+        BitmapDrawable drawable = (BitmapDrawable) db;
+        Bitmap bgBitmap = drawable.getBitmap();
+        //处理得到模糊效果的图
+        RenderScript renderScript = RenderScript.create(mContext);
+        // Allocate memory for Renderscript to work with
+        final Allocation input = Allocation.createFromBitmap(renderScript, bgBitmap);
+        final Allocation output = Allocation.createTyped(renderScript, input.getType());
+        // Load up an instance of the specific script that we want to use.
+        ScriptIntrinsicBlur scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+        scriptIntrinsicBlur.setInput(input);
+        // Set the blur radius
+        scriptIntrinsicBlur.setRadius(25);
+        // Start the ScriptIntrinisicBlur
+        scriptIntrinsicBlur.forEach(output);
+        // Copy the output to the blurred bitmap
+        output.copyTo(bgBitmap);
+        renderScript.destroy();
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bgBitmap);
+        svRoot.setBackground(bitmapDrawable);
+    }
+}

@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">生命宝</string>
+    <string name="mine_setting">设置</string>
+    <string name="card_buy">购买</string>
+    <string name="card_active">激活</string>
+    <string name="card_renew">续费</string>
+    <string name="card_report_loss">挂失</string>
+
+    <!--=====================订单相关=======================-->
+    <string name="mine_account_manager">账户管理</string>
+    <string name="mine_shopping_cart">购物车</string>
+    <string name="mine_info_noticed">消息通知</string>
+    <string name="mine_order">我的订单</string>
+    <string name="card_buy_now">立即购买</string>
+    <string name="card_add_to_cart">加入购物车</string>
+    <string name="bottom_company_declare">Copyright by 广东白云通用航空有限公司</string>
+    <string name="hot_line_of_company">400-0099-911</string>
+    <string name="shopping_cart_no_data">购物车空空如也，赶紧去逛逛</string>
+    <string name="shopping_cart_go_for">立即逛逛</string>
+    <string name="shopping_cart_choose_all">全选</string>
+    <string name="shopping_cart_settlement">结算（%s）</string>
+    <string name="shopping_cart_total_money">合计：￥%s</string>
+    <string name="shopping_cart_cancel">删除</string>
+    <string name="shopping_cart_edit">编辑</string>
+    <string name="shopping_settlement_address">楼号/单元/门牌号等详细地址</string>
+
+    <string name="emergency_call">如遇紧急情况，请点击拨打救援电话</string>
+</resources>

@@ -1,0 +1,147 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.MineAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.bean.CustomerInfoBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.fenguo.library.view.RoundImageViewWithBorder;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/9/5 0005.
+ * 用户信息
+ */
+
+public class ActivityUserInfo extends FrameActivity {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.avatar)
+    RoundImageViewWithBorder ivAvatar;//头像
+    @InjectView(R.id.tvUserName)
+    TextView tvUserName;//用户名
+    @InjectView(R.id.tvGender)
+    TextView tvGender;//性别
+    @InjectView(R.id.tvIdCode)
+    TextView tvIdCode;//身份证号码
+    @InjectView(R.id.tvPhoneNum)
+    TextView tvPhoneNum;//电话号码
+    @InjectView(R.id.tvAddress)
+    TextView tvAddress;//用户地址
+    @InjectView(R.id.tvNickName)
+    TextView tvNickName;//昵称
+    private HttpSubscriber httpSubscriber;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_user_info);
+        setToolbar(toolbar);
+        getUserInfo();//获取用户信息
+
+    }
+
+    private void getUserInfo() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onGetUserInfoNext);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        MineAPI.getInstance().getUserInfo(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CustomerInfoBean> onGetUserInfoNext = new SubscriberOnNextListener<CustomerInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CustomerInfoBean customerInfoBean) {
+            tvUserName.setText(customerInfoBean.getUserName());
+            tvNickName.setText(customerInfoBean.getNickName());
+            if (customerInfoBean.getGender() == 1) {
+                tvGender.setText("男");
+            } else {
+                tvGender.setText("女");
+            }
+            tvIdCode.setText(customerInfoBean.getIdCode());
+            tvPhoneNum.setText(customerInfoBean.getPhone());
+            tvAddress.setText(customerInfoBean.getUser_address());
+            Glide.with(ActivityUserInfo.this)
+                    .load("")
+                    .asBitmap()
+                    .placeholder(R.drawable.avatar_default)
+                    .error(R.drawable.avatar_default)
+                    .into(new BitmapImageViewTarget(ivAvatar) {
+                        @Override
+                        protected void setResource(Bitmap resource) {
+                            ivAvatar.setImageBitmap(resource, Color.WHITE, 0, true);
+                        }
+                    });
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    //解除订阅
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+}

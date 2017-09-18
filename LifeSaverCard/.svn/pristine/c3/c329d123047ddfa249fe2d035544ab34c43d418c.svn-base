@@ -1,0 +1,53 @@
+package com.byth.lifesaver.http;
+
+import com.fenguo.library.util.JsonUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/6/20 0020.
+ * 请求数据结果基类
+ * success:false or true
+ * msgList:[code:message]
+ * data:[]
+ */
+
+public class HttpResult<T> {
+    private boolean success;
+    private List<T> msgList;
+    private T data;
+
+    public List<T> getMsgList() {
+        return msgList;
+    }
+
+    public void setMsgList(List<T> msgList) {
+        this.msgList = msgList;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public <T> T getData(Class<T> clazz) {
+        return JsonUtil.fromObject(data, clazz);
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    @Override
+    public String toString() {
+        return JsonUtil.toJson(data);
+    }
+}

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开启位置服务"
+                android:textColor="@color/color_main_text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="根据您的位置，我们可以更好地提供救援服务"
+                android:textColor="@color/color_main_text_black"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cbLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/selector_setting_open_close"
+            android:button="@null"
+            android:checked="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/white">
+
+        <TextView
+            style="@style/ProfileContentStyle"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="20dp"
+            android:text="消息通知和提醒" />
+
+        <CheckBox
+            android:id="@+id/cbNotice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/selector_setting_open_close"
+            android:button="@null"
+            android:checked="false" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvCheckNewVersion"
+        style="@style/ProfileContentStyle"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:drawableRight="@drawable/btn_detail"
+        android:paddingLeft="20dp"
+        android:text="检查新版本" />
+
+    <include layout="@layout/horizontal_line" />
+
+    <TextView
+        android:id="@+id/tvAboutUs"
+        style="@style/ProfileContentStyle"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:drawableRight="@drawable/btn_detail"
+        android:paddingLeft="20dp"
+        android:text="关于我们" />
+
+    <TextView
+        android:id="@+id/tvUserProtocol"
+        style="@style/ProfileContentStyle"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:drawableRight="@drawable/btn_detail"
+        android:paddingLeft="20dp"
+        android:text="用户协议" />
+
+    <include layout="@layout/horizontal_line" />
+
+    <TextView
+        android:id="@+id/tvUserGuide"
+        style="@style/ProfileContentStyle"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:drawableRight="@drawable/btn_detail"
+        android:paddingLeft="20dp"
+        android:text="用户指南" />
+</LinearLayout>

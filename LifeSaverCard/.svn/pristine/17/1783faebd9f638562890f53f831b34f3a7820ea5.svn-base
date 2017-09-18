@@ -1,0 +1,60 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/7/17 0017.
+ * 设置
+ */
+
+public class ActivitySetting extends FrameActivity {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.cbLocation)
+    CheckBox cbLocation;
+    @InjectView(R.id.cbNotice)
+    CheckBox cbNotice;
+    @InjectView(R.id.tvCheckNewVersion)
+    TextView tvCheckNewVersion;
+    @InjectView(R.id.tvAboutUs)
+    TextView tvAboutUs;
+    @InjectView(R.id.tvUserProtocol)
+    TextView tvUserProtocol;
+    @InjectView(R.id.tvUserGuide)
+    TextView tvUserGuide;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_setting);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .fitsSystemWindows(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+}

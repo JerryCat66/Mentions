@@ -1,0 +1,58 @@
+package com.byth.lifesaver.function.mine.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+
+import butterknife.ButterKnife;
+
+/**
+ * Created by Administrator on 2017/6/12 0012.
+ * 已完成fragment
+ * TODO
+ */
+
+public class FragmentOrderFinished extends BaseFragment {
+    private String orderStatus;//订单状态
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_my_order);
+        ButterKnife.inject(this, view);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+}

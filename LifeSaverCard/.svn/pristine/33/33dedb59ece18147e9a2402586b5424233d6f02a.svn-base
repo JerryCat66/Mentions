@@ -1,0 +1,61 @@
+package com.byth.lifesaver.wxapi;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+
+import com.byth.lifesaver.util.Contants;
+import com.tencent.mm.opensdk.constants.ConstantsAPI;
+import com.tencent.mm.opensdk.modelbase.BaseReq;
+import com.tencent.mm.opensdk.modelbase.BaseResp;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+/**
+ * Created by Administrator on 2017/8/18 0018.
+ * 微信支付回调
+ */
+
+public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
+    private IWXAPI api;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        api = WXAPIFactory.createWXAPI(this, Contants.APP_ID);
+        api.handleIntent(getIntent(), this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        api.handleIntent(getIntent(), this);
+    }
+
+    @Override
+    public void onReq(BaseReq baseReq) {
+
+    }
+
+    @Override
+    public void onResp(BaseResp baseResp) {
+        if (baseResp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
+            String result = "";
+          /*  if (baseResp.errCode == 0) {
+                result = "支付成功";
+            } else if (baseResp.errCode == -2) {
+                result = "已取消支付";
+            } else {
+                result = "支付失败";
+            }*/
+            result = String.valueOf(baseResp.errCode);
+            Intent intent = new Intent();
+            intent.setAction("com.byth.lifesaver.wxapi.pay");
+            intent.putExtra("payResult",result);
+            WXPayEntryActivity.this.sendBroadcast(intent);//发送广播
+            finish();
+        }
+    }
+}

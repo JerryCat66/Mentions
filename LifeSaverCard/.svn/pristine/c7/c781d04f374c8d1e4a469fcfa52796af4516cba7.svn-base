@@ -1,0 +1,54 @@
+package com.byth.lifesaver.bean;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/8/10 0010.
+ * 地址list
+ */
+
+public class AddressListBean {
+    private List<AddressList> addrList;
+    private int maxPage;
+
+    public List<AddressList> getAddrList() {
+        return addrList;
+    }
+
+    public class AddressList {
+        private int addrId;//收货地址ID
+        private int userId; //用户ID
+        private String consignee;//收货人
+        private String consigneeMobile;//收货人手机
+        private String addr;//具体地址
+        private String defaultFlag;//默认地址标识，默认地址Y，非默认地址
+
+        public int getAddrId() {
+            return addrId;
+        }
+
+        public int getUserId() {
+            return userId;
+        }
+
+        public String getConsignee() {
+            return consignee;
+        }
+
+        public String getConsigneeMobile() {
+            return consigneeMobile;
+        }
+
+        public String getAddr() {
+            return addr;
+        }
+
+        public String getDefaultFlag() {
+            return defaultFlag;
+        }
+    }
+
+    public int getMaxPage() {
+        return maxPage;
+    }
+}

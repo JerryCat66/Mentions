@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp">
+
+        <ImageView
+            android:id="@+id/image_card"
+            android:layout_width="120dp"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:src="@drawable/avatar" />
+
+        <TextView
+            android:id="@+id/card_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/image_card"
+            android:text="生命宝航空救援卡"
+            android:textColor="@color/color_main_text_black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/card_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_name"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/image_card"
+            android:text="使用年限1年"
+            android:textColor="@color/color_main_text_normal"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/card_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:text="已完成"
+            android:textColor="@color/color_main_text_normal"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <include layout="@layout/horizontal_line" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="3dp">
+
+        <TextView
+            android:id="@+id/money_of_pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:text="实付款:￥1600"
+            android:textColor="@color/color_main_text"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/checkLogistic"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/buy_again"
+            android:background="@drawable/shape_with_check_logistic"
+            android:text="查看物流"
+            android:textColor="@color/color_main_text"
+            android:textSize="12sp"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/buy_again"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_login_button"
+            android:text="再次购买"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+    <include layout="@layout/horizontal_line" />
+</LinearLayout>

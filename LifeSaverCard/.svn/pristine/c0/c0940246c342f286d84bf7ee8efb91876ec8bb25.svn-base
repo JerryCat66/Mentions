@@ -1,0 +1,224 @@
+package com.byth.lifesaver.function.home;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.MainGridAdapter;
+import com.byth.lifesaver.adapter.ViewPagerAdapter;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.function.card.activity.ActivityCardDetail;
+import com.byth.lifesaver.widget.MyGridView;
+import com.byth.lifesaver.widget.refreshlayout.RefreshLayout;
+import com.fenguo.library.util.NetworkUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ * 主页
+ */
+
+public class HomeFragment extends BaseFragment implements AdapterView.OnItemClickListener {
+    @InjectView(R.id.rl_network)
+    RelativeLayout rlNetwork;
+    @InjectView(R.id.Home_ViewPager)
+    ViewPager Home_ViewPager;
+    @InjectView(R.id.indicatorContainer)
+    LinearLayout ll_indicator;
+    @InjectView(R.id.main_grid)
+    MyGridView mainGrid;
+    @InjectView(R.id.refresh)
+    RefreshLayout refreshLayout;
+    @InjectView(R.id.list_news)
+    ListView listNews;
+    private int status;
+    private volatile static HomeFragment homeFragment;
+    private ViewPagerAdapter viewPagerAdapter;
+    private MainGridAdapter mainGridAdapter;
+    private Handler handler;
+
+    public HomeFragment() {
+
+    }
+
+    public static HomeFragment getInstance() {
+        if (homeFragment == null) {
+            synchronized (HomeFragment.class) {
+                if (homeFragment == null) {
+                    homeFragment = new HomeFragment();
+                }
+            }
+        }
+        return homeFragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_home);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initComponent() {
+        status = 1;
+        handler = new Handler();
+        viewPagerAdapter = new ViewPagerAdapter(getActivity(), status);
+        Home_ViewPager.setAdapter(viewPagerAdapter);
+        handler.post(adScrollRun);
+        mainGridAdapter = new MainGridAdapter(getActivity());
+        mainGrid.setAdapter(mainGridAdapter);
+        mainGrid.setOnItemClickListener(this);
+        listNews.setOnItemClickListener(this);
+    }
+
+    /**
+     * 开启线程跑轮播
+     */
+    private Runnable adScrollRun = new Runnable() {
+        @Override
+        public void run() {
+            if (viewPagerAdapter.pageIndex < Integer.MAX_VALUE && viewPagerAdapter.getAdListSize() > 0) {
+                Home_ViewPager.setCurrentItem(viewPagerAdapter.pageIndex++, true);
+                handler.postDelayed(this, 5000);//每张图片显示五秒
+            }
+        }
+    };
+
+    @Override
+    protected void initListener() {
+        Home_ViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < ll_indicator.getChildCount(); i++) {
+                    if (i == (position % viewPagerAdapter.getAdListSize())) {
+                        ll_indicator.getChildAt(i).setBackgroundResource(R.drawable.origin_press_icon);
+                    } else {
+                        ll_indicator.getChildAt(i).setBackgroundResource(R.drawable.origin_norma_icon);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        refreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
+            @Override
+            public void onPullDownToRefresh() {
+
+            }
+
+            @Override
+            public void onPullUpToRefresh() {
+
+            }
+        });
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ll_indicator.removeAllViews();
+        handler.removeCallbacks(adScrollRun);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (NetworkUtil.checkConnection(getActivity())) {
+            rlNetwork.setVisibility(View.GONE);
+        } else {
+            rlNetwork.setVisibility(View.VISIBLE);
+        }
+        addIndicator();
+    }
+
+    private void addIndicator() {
+        for (int i = 0; i < viewPagerAdapter.getAdListSize(); i++) {
+            ImageView view = new ImageView(getActivity());
+            LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
+                    25, 25);
+            layout.setMargins(10, 0, 0, 0);
+            view.setLayoutParams(layout);
+            view.setScaleType(ImageView.ScaleType.FIT_XY);
+            view.setPadding(20, 20, 20, 20);
+            if (i == 0) {
+                view.setBackgroundResource(R.drawable.origin_press_icon);
+            } else {
+                view.setBackgroundResource(R.drawable.origin_norma_icon);
+            }
+            ll_indicator.addView(view);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                ((MainActivity) getActivity()).rgMain.check(R.id.emergency);//救援界面
+                break;
+            case 1:
+                openActivityNotClose(ActivityCardDetail.class, null);//购买卡片
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+        }
+    }
+}

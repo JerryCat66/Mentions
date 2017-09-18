@@ -1,0 +1,58 @@
+package com.byth.lifesaver;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.RadioGroup;
+
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.function.home.HomeFragment;
+import com.byth.lifesaver.widget.RadioTagButton;
+
+import butterknife.InjectView;
+
+public class MainActivity extends FrameActivity implements RadioGroup.OnCheckedChangeListener {
+    @InjectView(R.id.main_radio)
+    public RadioGroup rgMain;
+    @InjectView(R.id.emergency)
+    public RadioTagButton rtbEmergency;
+    @InjectView(R.id.card)
+    public RadioTagButton rtbCard;
+    @InjectView(R.id.mine)
+    public RadioTagButton rtbMine;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_main);
+        replaceFragment(R.id.fragment_container, HomeFragment.getInstance(), "home", false);
+    }
+
+    @Override
+    protected void initListener() {
+        rgMain.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.home:
+                replaceFragment(R.id.fragment_container, "home", HomeFragment.getInstance());
+                break;
+            case R.id.emergency:
+                break;
+            case R.id.card:
+                break;
+            case R.id.mine:
+                break;
+        }
+    }
+}

@@ -1,0 +1,46 @@
+package com.byth.lifesaver.function.mine.fragment;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.byth.lifesaver.base.BaseFragment;
+
+/**
+ * Created by Administrator on 2017/6/12 0012.
+ * 已完成fragment
+ * TODO
+ */
+
+public class FragmentOrderFinished extends BaseFragment {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+}

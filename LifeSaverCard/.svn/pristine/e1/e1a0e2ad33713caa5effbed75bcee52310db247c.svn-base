@@ -1,0 +1,48 @@
+package com.byth.lifesaver.api;
+
+import com.byth.lifesaver.http.HttpMethod;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.api.request.HttpServiceRequest;
+
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscriber;
+
+/**
+ * Created by Administrator on 2017/6/6 0006.
+ * 登录注册等
+ */
+
+public class AuthAPI extends HttpMethod {
+    private volatile static AuthAPI authAPI;
+    private HttpServiceRequest httpServiceRequest = retrofitBuild().create(HttpServiceRequest.class);
+
+    private AuthAPI() {
+
+    }
+
+    public static AuthAPI getInstance() {
+        if (authAPI == null) {
+            synchronized (AuthAPI.class) {
+                if (authAPI == null) {
+                    authAPI = new AuthAPI();
+                }
+            }
+        }
+        return authAPI;
+    }
+    //获取验证码
+    public void getRegisterCodeWithRetrofit(Subscriber<HttpResult> subscriber, RequestBody body) {
+       /* httpServiceRequest = retrofitBuild().create(HttpServiceRequest.class);*/
+        Observable observable = httpServiceRequest.registerCode(body).map(new HttpMethod.HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    /**
+     * 注册
+     */
+    public void register(Subscriber<HttpResult> subscriber, RequestBody body) {
+        Observable observable = httpServiceRequest.register(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+}

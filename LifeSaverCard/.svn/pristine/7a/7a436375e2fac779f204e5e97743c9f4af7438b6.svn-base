@@ -1,0 +1,95 @@
+package com.byth.lifesaver;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.function.home.HomeFragment;
+import com.byth.lifesaver.widget.RadioTagButton;
+
+import butterknife.InjectView;
+
+public class MainActivity extends FrameActivity implements RadioGroup.OnCheckedChangeListener {
+    @InjectView(R.id.main_radio)
+    public RadioGroup rgMain;
+    @InjectView(R.id.emergency)
+    public RadioTagButton rtbEmergency;
+    @InjectView(R.id.card)
+    public RadioTagButton rtbCard;
+    @InjectView(R.id.mine)
+    public RadioTagButton rtbMine;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolBar;
+    @InjectView(R.id.title)
+    TextView tvTitle;
+
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_main);
+        replaceFragment(R.id.fragment_container, HomeFragment.getInstance(), "home", false);
+        mToolBar.setTitle("");
+        //setSupportActionBar(mToolBar);
+        setTitleText(0);
+        tvTitle.setText("首页");
+    }
+
+    @Override
+    protected void initListener() {
+        rgMain.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.home:
+                replaceFragment(R.id.fragment_container, "home", HomeFragment.getInstance());
+                setTitleText(0);
+                break;
+            case R.id.emergency:
+                setTitleText(1);
+                break;
+            case R.id.card:
+                setTitleText(2);
+                break;
+            case R.id.mine:
+                setTitleText(3);
+                break;
+        }
+    }
+
+    private void setTitleText(int tab) {
+        switch (tab) {
+            case 0:
+                mToolBar.setVisibility(View.VISIBLE);
+                tvTitle.setText("首页");
+                break;
+            case 1:
+                mToolBar.setVisibility(View.VISIBLE);
+                tvTitle.setText("救援");
+                break;
+            case 2:
+                mToolBar.setVisibility(View.VISIBLE);
+                tvTitle.setText("生命保");
+                break;
+            case 3:
+                mToolBar.setVisibility(View.VISIBLE);
+                tvTitle.setText("我的");
+                break;
+        }
+    }
+}

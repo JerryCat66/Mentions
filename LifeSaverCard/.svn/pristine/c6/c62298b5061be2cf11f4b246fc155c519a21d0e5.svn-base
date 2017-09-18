@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/shopping_cart_bottom"
+        android:layout_below="@+id/toolbar">
+
+       <!-- <com.fenguo.library.view.refreshlayout.RefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">-->
+
+            <ExpandableListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@color/window_background"
+                android:dividerHeight="0.5dp" />
+        <!--</com.fenguo.library.view.refreshlayout.RefreshLayout>-->
+
+        <include layout="@layout/shopping_cart_no_data" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/shopping_cart_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_shopping_cart_bottom">
+
+        <!--<CheckBox
+            android:id="@+id/cBoxAgree"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:button="@null"
+            android:checked="true"
+            android:drawableLeft="@drawable/bg_checked"
+            android:drawablePadding="6dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/shopping_cart_choose_all"
+            android:textColor="@color/white"
+            android:textSize="14sp" />-->
+        <ImageView
+            android:id="@+id/ivSelectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/check_false" />
+
+        <TextView
+            android:id="@+id/tvChoseAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/ivSelectAll"
+            android:text="@string/shopping_cart_choose_all"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/txtViewPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_toRightOf="@+id/tvChoseAll"
+            android:gravity="center_vertical"
+            android:text="@string/shopping_cart_total_money"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txtViewSettlement"
+            android:layout_width="114dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_buy"
+            android:gravity="center"
+            android:text="@string/shopping_cart_settlement"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</RelativeLayout>

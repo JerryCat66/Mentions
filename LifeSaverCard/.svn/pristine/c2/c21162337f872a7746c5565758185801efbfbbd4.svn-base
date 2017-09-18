@@ -1,0 +1,57 @@
+package com.byth.lifesaver.http;
+
+import com.fenguo.library.util.JsonUtil;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/6/20 0020.
+ * 请求数据结果基类
+ */
+
+public class HttpResult<T> {
+    private List<returnMessage> message;
+    private T data;
+
+    public List<returnMessage> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<returnMessage> message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public class returnMessage {
+        private String code;
+        private String message;
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return JsonUtil.toJson(data);
+    }
+}

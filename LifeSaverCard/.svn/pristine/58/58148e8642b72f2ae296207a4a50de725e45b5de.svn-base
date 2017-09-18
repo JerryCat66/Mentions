@@ -1,0 +1,52 @@
+package com.byth.lifesaver.http;
+
+import rx.Subscriber;
+
+/**
+ * Created by wjn on 2016/7/4.
+ * 自定义网络请求观察者
+ */
+public class HttpSubscriber<T> extends Subscriber<T> {
+
+    private SubscriberOnNextListener mSubscriberOnNextListener;
+
+    public HttpSubscriber(SubscriberOnNextListener mSubscriberOnNextListener) {
+        //把SubscriberOnNextListener对象传进来做统一调用
+        this.mSubscriberOnNextListener = mSubscriberOnNextListener;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onCompleted() {
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        
+    }
+
+    /**
+     * 将onNext方法中的返回结果交给Activity或Fragment自己处理
+     *
+     * @param t 创建Subscriber时的泛型类型
+     */
+    @Override
+    public void onNext(T t) {
+        if (mSubscriberOnNextListener != null) {
+            mSubscriberOnNextListener.onNext(t);
+        }
+    }
+
+    /**
+     * 取消对observable的订阅
+     */
+    public void unSubscribe() {
+        if (!this.isUnsubscribed()) {
+            this.unsubscribe();
+        }
+    }
+}

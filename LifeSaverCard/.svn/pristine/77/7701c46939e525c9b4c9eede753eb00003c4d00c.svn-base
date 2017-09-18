@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <stroke
+        android:width="@dimen/stroke_height"
+        android:color="@color/color_main" />
+    <solid android:color="@color/color_main" />
+    <corners android:radius="5dp" />
+
+    <!--    <stroke
+            android:width="@dimen/stroke_height"
+            android:color="@color/start_btn_color" />
+
+        <solid android:color="@color/start_btn_color" />
+
+        <corners android:radius="@dimen/edittext_corners_radius" />-->
+
+</shape>

@@ -1,0 +1,78 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/30 0030.
+ * 生命宝卡首页点进去卡详情
+ */
+
+public class ActivityLifeSaverCardDetail extends FrameActivity {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.cardNum)
+    TextView cardNum;
+    @InjectView(R.id.activeDate)
+    TextView activeDate;
+    @InjectView(R.id.deadDate)
+    TextView deadDate;
+    @InjectView(R.id.userName)
+    TextView userName;
+    @InjectView(R.id.sex)
+    TextView sex;
+    @InjectView(R.id.idNum)
+    TextView idNum;
+    @InjectView(R.id.bindPhone)
+    TextView bindPhone;
+    @InjectView(R.id.contactAddress)
+    TextView contactAddress;
+    @InjectView(R.id.useArea)
+    TextView useArea;
+    @InjectView(R.id.waySell)
+    TextView waySell;
+    @InjectView(R.id.emergencyContact)
+    TextView emergencyContact;
+    @InjectView(R.id.emergencyCall)
+    TextView emergencyCall;
+    @InjectView(R.id.relationShip)
+    TextView relationShip;
+    @InjectView(R.id.bloodType)
+    TextView bloodType;
+    @InjectView(R.id.medicalHistory)
+    TextView medicalHistory;
+    @InjectView(R.id.drugAllergy)
+    TextView drugAllergy;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_life_saver_card_detail);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+}

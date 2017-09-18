@@ -1,0 +1,75 @@
+package com.byth.lifesaver.bean;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 广告字段实体类
+ */
+
+public class AdListBean {
+    private List<Advertisement> data;
+    private int pageSize;
+    private int pageNum;
+    private int totalPage;
+    private int total;
+
+    public int getTotal() {
+        return total;
+    }
+
+    public List<Advertisement> getData() {
+        return data;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public int getTotalPage() {
+        return totalPage;
+    }
+
+    public class Advertisement {
+        private int id;
+        private String detailUrl;
+        private String adUrl;
+        private String title;
+        private String content;
+        private String updateTimeStr;
+        private String maxTimeStr;
+
+        public String getMaxTimeStr() {
+            return maxTimeStr;
+        }
+
+        public String getAdUrl() {
+            return adUrl;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public String getUpdateTimeStr() {
+            return updateTimeStr;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getDetailUrl() {
+            return detailUrl;
+        }
+    }
+
+}

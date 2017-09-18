@@ -1,0 +1,377 @@
+package com.byth.lifesaver.function.home;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.MainGridAdapter;
+import com.byth.lifesaver.api.API;
+import com.byth.lifesaver.api.HomeAPI;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.bean.AddressListBean;
+import com.byth.lifesaver.bean.CardRenewBean;
+import com.byth.lifesaver.bean.HomePictureListBean;
+import com.byth.lifesaver.function.card.activity.ActivityCardDetail;
+import com.byth.lifesaver.function.card.activity.ActivityCardInfoConfirm;
+import com.byth.lifesaver.function.card.activity.ActivityRenewCard;
+import com.byth.lifesaver.function.mine.activity.ActivityAccountManager;
+import com.byth.lifesaver.function.mine.activity.ActivityMyOrder;
+import com.byth.lifesaver.function.mine.activity.ActivityUserInfo;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.byth.lifesaver.widget.MyGridView;
+import com.byth.lifesaver.widget.TipsDialog;
+import com.fenguo.library.util.FenguoUtil;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.NetworkUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+import com.youth.banner.Banner;
+import com.youth.banner.BannerConfig;
+import com.youth.banner.listener.OnBannerListener;
+import com.youth.banner.loader.ImageLoader;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ * 主页
+ */
+
+public class HomeFragment extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener, OnBannerListener {
+    @InjectView(R.id.rl_network)
+    RelativeLayout rlNetwork;//检查是否有网络
+    @InjectView(R.id.main_banner)
+    Banner mainBanner;//主页轮播
+    @InjectView(R.id.main_grid)
+    MyGridView mainGrid;//首页grid
+    @InjectView(R.id.Introduce)
+    RelativeLayout llIntroduce;//生命宝介绍
+    @InjectView(R.id.NewsCenter)
+    RelativeLayout llNewsCenter;//新闻界面
+    @InjectView(R.id.Outlets)
+    RelativeLayout llOutlets;//网点介绍
+    @InjectView(R.id.hot_line)
+    TextView tvHotLine;//客服热线
+    private boolean isRenew;//是否可以续卡
+    private volatile static HomeFragment homeFragment;
+    private MainGridAdapter mainGridAdapter;
+    private HttpSubscriber httpSubscriber;
+    private List<HomePictureListBean.FiledirDto> pictureList = new ArrayList<>();
+
+    public HomeFragment() {
+
+    }
+
+    public static HomeFragment getInstance() {
+        if (homeFragment == null) {
+            synchronized (HomeFragment.class) {
+                if (homeFragment == null) {
+                    homeFragment = new HomeFragment();
+                }
+            }
+        }
+        return homeFragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_home);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initComponent() {
+        mainGridAdapter = new MainGridAdapter(getActivity());
+        mainGrid.setAdapter(mainGridAdapter);
+        mainGrid.setOnItemClickListener(this);
+        getIsRenewTag();
+    }
+
+    /**
+     * 获取轮播图列表
+     */
+    private void getBannerList() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onBannerListener);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), "");
+        HomeAPI.getInstance().getHomeBannerList(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<HomePictureListBean> onBannerListener = new SubscriberOnNextListener<HomePictureListBean>() {
+        @Override
+        public void onStart() {
+            ((MainActivity) getActivity()).showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(HomePictureListBean homePictureListBean) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            pictureList = homePictureListBean.getFiledirDtoList();
+            List<String> imgUrls = new ArrayList<>();
+            for (HomePictureListBean.FiledirDto imgUrl : homePictureListBean.filedirDtoList) {
+                imgUrls.add(API.url + imgUrl.getFileName());
+            }
+            mainBanner.setIndicatorGravity(BannerConfig.CENTER)//指示器居中
+                    .setOnBannerListener(HomeFragment.this)
+                    .setImages(imgUrls)
+                    .setImageLoader(new ImageLoader() {
+                        @Override
+                        public void displayImage(Context context, Object path, ImageView imageView) {
+                            Glide.with(context.getApplicationContext())
+                                    .load((String) path)
+                                    .crossFade()
+                                    .placeholder(R.drawable.card_default)
+                                    .into(imageView);
+                        }
+                    })
+                    .isAutoPlay(true)//是否自动轮播
+                    .setViewPagerIsScroll(true)//是否允许手指滑动
+                    .setDelayTime(5000).start();//5秒间隔
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void initListener() {
+        llIntroduce.setOnClickListener(this);
+        llNewsCenter.setOnClickListener(this);
+        llOutlets.setOnClickListener(this);
+        tvHotLine.setOnClickListener(this);
+    }
+
+    @Override
+    protected void initData() {
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (NetworkUtil.checkConnection(getActivity())) {
+            rlNetwork.setVisibility(View.GONE);
+        } else {
+            rlNetwork.setVisibility(View.VISIBLE);
+        }
+        getBannerList();
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                //((MainActivity) getActivity()).rgMain.check(R.id.emergency);//救援界面
+                if (preference.getString(LifeSaverPreference.OPERATION_CODE).equals("-1")) {
+                    showImproveProfile();
+                } else {
+                    openActivityNotClose(ActivityCardDetail.class, null);//购买卡片
+                }
+                break;
+            case 1:
+                if (preference.getString(LifeSaverPreference.OPERATION_CODE).equals("-1")) {
+                    showImproveProfile();
+                } else {
+                    openActivityNotClose(ActivityCardInfoConfirm.class, null);//卡片激活
+                }
+                break;
+            case 2:
+                if (preference.getString(LifeSaverPreference.OPERATION_CODE).equals("-1")) {
+                    showImproveProfile();
+                } else if (!preference.getBoolean(LifeSaverPreference.ISOPERATINGCARD)) {
+                    TipsDialog.makeDialog(getActivity(), "提示", "您还没有激活的卡片，立即激活？", "是", "否", new TipsDialog.onDialogListener() {
+                        @Override
+                        public void onOkClick() {
+                            openActivityNotClose(ActivityCardInfoConfirm.class, null);
+                        }
+
+                        @Override
+                        public void onCancelClick() {
+
+                        }
+                    }).show();
+                }
+                break;
+            case 3:
+                openActivityNotClose(ActivityMyOrder.class, null);//我的订单
+                break;
+            case 4:
+                openActivityNotClose(ActivityAccountManager.class, null);//账户管理
+                break;
+            case 5:
+                //消息通知
+                break;
+        }
+    }
+
+    //弹出完善资料框
+    private void showImproveProfile() {
+        TipsDialog.makeDialog(getActivity(), "提示", "请完善个人信息", "确定", "取消", new TipsDialog.onDialogListener() {
+            @Override
+            public void onOkClick() {
+                openActivityNotClose(ActivityUserInfo.class, null);
+            }
+
+            @Override
+            public void onCancelClick() {
+
+            }
+        }).show();
+    }
+
+    //获取是否可以进行续卡标识
+    private void getIsRenewTag() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onNextListener);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        HomeAPI.getInstance().getIsRenewTag(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CardRenewBean> onNextListener = new SubscriberOnNextListener<CardRenewBean>() {
+        @Override
+        public void onStart() {
+            ((MainActivity) getActivity()).showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CardRenewBean cardRenewBean) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            isRenew = cardRenewBean.isOperatingCard();
+            preference.putBoolean(LifeSaverPreference.ISOPERATINGCARD, isRenew);
+            if (isRenew) {
+                openActivityNotClose(ActivityRenewCard.class, null);//卡续费
+            } else {
+                showToast("您还没有激活的卡,无法续费");
+            }
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+        }
+    };
+
+    //解除订阅
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.Introduce:
+                FenguoUtil.openWebViewActivity(getActivity(), "生命宝介绍", "http://www.baiyunholdings.com/services.jsp?id=8433adb14b5642029f0ec664d3b1716f", "");
+                break;
+            case R.id.NewsCenter:
+                FenguoUtil.openWebViewActivity(getActivity(), "新闻中心", "http://www.baiyunholdings.com/newsList.jsp", "");
+                break;
+            case R.id.Outlets:
+                FenguoUtil.openWebViewActivity(getActivity(), "网点介绍", "http://www.baiyunholdings.com/help.jsp", "");
+                break;
+            case R.id.hot_line:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+
+    @Override
+    public void OnBannerClick(int position) {
+        String url = pictureList.get(position).getImageUrl();
+        FenguoUtil.openWebViewActivity(getActivity(), "广告", url, "");
+    }
+}

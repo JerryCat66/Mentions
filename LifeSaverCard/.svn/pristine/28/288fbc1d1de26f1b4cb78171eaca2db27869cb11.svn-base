@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_behavior="com.byth.lifesaver.util.AppBarLayoutOverScrollViewBehavior">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg_login"
+                android:tag="overScroll"
+                app:layout_collapseMode="parallax" />
+
+            <RelativeLayout
+                android:id="@+id/profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp">
+
+                <!-- <ImageView
+                     android:id="@+id/avatar"
+                     android:layout_width="65dip"
+                     android:layout_height="65dip"
+
+                     android:src="@mipmap/ic_launcher" />-->
+                <com.fenguo.library.view.RoundImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    app:src="@drawable/avatar_default"
+                    app:type="circle" />
+
+                <TextView
+                    android:id="@+id/nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/avatar"
+                    android:layout_centerHorizontal="true"
+                    android:text="测试人员"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:titleTextAppearance="@style/Toolbar.TitleText">
+
+                <TextView
+                    android:id="@+id/mine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="我的"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/F2" />
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/horizontal_line" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/mine_icon_manager"
+                    style="@style/myWalletStyle"
+                    android:drawableTop="@drawable/mine_icon_money"
+                    android:text="@string/mine_account_manager" />
+
+                <include layout="@layout/vertical_line" />
+
+                <TextView
+                    android:id="@+id/mine_icon_shopping_cart"
+                    style="@style/myWalletStyle"
+                    android:drawableTop="@drawable/mine_icon_reward"
+                    android:text="@string/mine_shopping_cart" />
+
+                <include layout="@layout/vertical_line" />
+
+                <TextView
+                    android:id="@+id/mine_icon_order"
+                    style="@style/myWalletStyle"
+                    android:drawableTop="@drawable/mine_icon_safe"
+                    android:text="@string/mine_order" />
+
+            </LinearLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <include layout="@layout/horizontal_line" />
+
+                <TextView
+                    android:id="@+id/mine_icon_notice"
+                    style="@style/mineStyle"
+                    android:drawableLeft="@drawable/mine_icon_message"
+                    android:text="@string/mine_info_noticed" />
+
+                <include layout="@layout/horizontal_line" />
+
+                <TextView
+                    android:id="@+id/mine_icon_settlement"
+                    style="@style/mineStyle"
+                    android:drawableLeft="@drawable/mine_icon_setting"
+                    android:text="@string/mine_settlement" />
+
+                <include layout="@layout/horizontal_line" />
+
+                <TextView
+                    android:id="@+id/mine_icon_setting"
+                    style="@style/mineStyle"
+                    android:drawableLeft="@drawable/mine_icon_setting"
+                    android:text="@string/mine_setting" />
+
+                <include layout="@layout/horizontal_line" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

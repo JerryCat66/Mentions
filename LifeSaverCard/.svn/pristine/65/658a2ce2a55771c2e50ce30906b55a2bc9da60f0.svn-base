@@ -1,0 +1,176 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.AuthAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.MyCountDownTimer;
+import com.byth.lifesaver.widget.DialogWithList;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.HashMap;
+
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/6/14 0014.
+ * 补办
+ */
+
+public class ActivityCardReissue extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.report_for_loss)
+    public TextView tvReportForLoss;//挂失
+    @InjectView(R.id.ed_card_type)
+    TextView edCardType;//卡类型
+    @InjectView(R.id.cardNumReissue)
+    TextView tvCardNumReissue;//卡号
+    @InjectView(R.id.idNumReissue)
+    TextView tvIdNumResissue;//身份证
+    @InjectView(R.id.userNameReissue)
+    TextView tvUserNameReissue;//持卡人
+    @InjectView(R.id.phoneNumReissue)
+    TextView edPhoneNumRessiue;//电话号码
+    @InjectView(R.id.editVerify)
+    EditText edVerify;//验证码输入框
+    @InjectView(R.id.btnVerify)
+    Button btnVerify;//验证码按钮
+    @InjectView(R.id.bloodType)
+    TextView tvBloodType;//血型
+    @InjectView(R.id.deadDate)
+    TextView tvDeadDate;//失效时间
+    @InjectView(R.id.btn_next_step)
+    Button btnNextStep;
+    private MyCountDownTimer countDownTimer;
+    private HttpSubscriber httpSubscriber;
+    private String type;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_card_reissue);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        edCardType.setOnClickListener(this);
+        tvReportForLoss.setOnClickListener(this);
+        btnNextStep.setOnClickListener(this);
+        btnVerify.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ed_card_type:
+                lifeSaverUtil.showDialogList(this, R.array.card_type, "请选择卡类型", new DialogWithList.OnSelectedListener() {
+                    @Override
+                    public void setOnSelectedListener(int position, String content) {
+                        edCardType.setText(content);
+                    }
+                });
+                break;
+            case R.id.report_for_loss:
+                openActivityNotClose(ActivityReportForLoss.class, null);
+                break;
+            case R.id.btnVerify:
+                countDownTimer = new MyCountDownTimer(btnVerify);
+                countDownTimer.start();
+                getVerifyCode(edPhoneNumRessiue.getText().toString().trim());
+                break;
+            case R.id.btn_next_step:
+                break;
+        }
+    }
+
+    /**
+     * 获取验证码
+     *
+     * @param phoneNum
+     */
+    private void getVerifyCode(String phoneNum) {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        } else {
+            phoneNum = edPhoneNumRessiue.getText().toString().trim();
+            type = "MU";
+            httpSubscriber = new HttpSubscriber(onNextListener);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("mobileNo", phoneNum);
+            map.put("type", type);
+            RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+            AuthAPI.getInstance().getRegisterCodeWithRetrofit(httpSubscriber, body);
+        }
+    }
+
+    SubscriberOnNextListener<HttpResult> onNextListener = new SubscriberOnNextListener<HttpResult>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(HttpResult result) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            btnVerify.setClickable(true);
+            btnVerify.setText("获取验证码");
+        }
+    }
+}

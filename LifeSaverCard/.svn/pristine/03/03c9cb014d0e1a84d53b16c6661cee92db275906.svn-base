@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sv_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/custom_toolbar" />
+        <!--============持卡人信息=============-->
+        <include layout="@layout/horizontal_line" />
+
+        <TextView
+            style="@style/UserInfoTextView"
+            android:text="持卡人信息（*为必填）" />
+
+        <include layout="@layout/horizontal_line" />
+
+        <include layout="@layout/include_user_info" />
+        <!--=============紧急联系人=============-->
+        <include layout="@layout/horizontal_line" />
+
+        <TextView
+            style="@style/UserInfoTextView"
+            android:text="紧急联系人（*为必填）" />
+
+        <include layout="@layout/horizontal_line" />
+
+        <include layout="@layout/include_emergency_contact" />
+        <!--=============血型、既往病史=============-->
+        <include layout="@layout/horizontal_line" />
+
+        <TextView
+            style="@style/UserInfoTextView"
+            android:text="血型、既往病史（*为必填）" />
+
+        <include layout="@layout/horizontal_line" />
+
+        <include layout="@layout/include_blood_medical" />
+        <!--=============药物过敏情况=============-->
+        <include layout="@layout/horizontal_line" />
+
+        <TextView
+            style="@style/UserInfoTextView"
+            android:text="持卡人信息（*为必填）" />
+
+        <include layout="@layout/horizontal_line" />
+
+        <include layout="@layout/include_drug_allergy" />
+
+        <Button
+            android:id="@+id/btn_next_step"
+            style="@style/LoginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="10dp"
+            android:padding="12dp"
+            android:text="下一步" />
+    </LinearLayout>
+</ScrollView>

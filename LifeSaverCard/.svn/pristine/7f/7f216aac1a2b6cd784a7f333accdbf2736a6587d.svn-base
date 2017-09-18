@@ -1,0 +1,71 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/7/18 0018.
+ * 修改密码第二步
+ * 输入两次相同的密码
+ */
+
+public class ActivityModifyPasswordStepTwo extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.psw)
+    EditText psw;
+    @InjectView(R.id.pswConfirm)
+    EditText pswConfirm;
+    @InjectView(R.id.ok)
+    Button ok;
+    @InjectView(R.id.hot_line)
+    TextView servicePhone;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_modify_psw_step2);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        ok.setOnClickListener(this);
+        servicePhone.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ok:
+                openActivityNotClose(ActivityModifyPasswordSuccess.class, null);
+                break;
+            case R.id.hot_line:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+}

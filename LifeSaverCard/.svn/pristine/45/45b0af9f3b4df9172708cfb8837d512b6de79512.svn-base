@@ -1,0 +1,101 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.util.MyCountDownTimer;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/12 0012.
+ * 激活使用
+ * TODO
+ */
+
+public class ActivityActiveForUsing extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.img_choose_image)
+    ImageView imgChooseImage;
+    @InjectView(R.id.btnVerify)
+    Button btnVerify;
+    @InjectView(R.id.editVerify)
+    EditText edVerify;
+    @InjectView(R.id.ed_bind_phone)
+    EditText edBindPhone;
+    @InjectView(R.id.btn_finish)
+    Button btnFinish;
+    private MyCountDownTimer downTimer;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_active_for_using);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        btnVerify.setOnClickListener(this);
+        btnFinish.setOnClickListener(this);
+        imgChooseImage.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnVerify://获取验证码
+                if (StringUtil.isEmpty(edBindPhone.getText().toString().trim())) {
+                    showToast("绑定手机号码不能为空");
+                }
+                downTimer = new MyCountDownTimer(btnVerify);
+                downTimer.start();
+                getVerifyCode(edBindPhone.getText().toString().trim());
+                break;
+            case R.id.btn_finish://完成按钮点击
+                break;
+            case R.id.img_choose_image://选择图片
+                break;
+        }
+    }
+
+    /**
+     * 获取验证码
+     *
+     * @param phone
+     */
+    private void getVerifyCode(String phone) {
+        phone = edBindPhone.getText().toString().trim();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (downTimer != null) {
+            downTimer.cancel();
+            btnVerify.setClickable(true);
+            btnVerify.setText("获取验证码");
+        }
+    }
+}

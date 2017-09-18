@@ -1,0 +1,427 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.Manifest;
+import android.content.Intent;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.API;
+import com.byth.lifesaver.api.MineAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.bean.CustomerInfoBean;
+import com.byth.lifesaver.bean.UserInfoBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.Contants;
+import com.byth.lifesaver.util.GlideWithGalleryImageLoader;
+import com.byth.lifesaver.util.IdKeyboardUtil;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.byth.lifesaver.util.PermissionActivity;
+import com.byth.lifesaver.util.PermissionChecker;
+import com.byth.lifesaver.widget.DialogPopupBottom;
+import com.byth.lifesaver.widget.DialogWithList;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.fenguo.library.view.RoundImageViewWithBorder;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.InjectView;
+import cn.finalteam.galleryfinal.CoreConfig;
+import cn.finalteam.galleryfinal.FunctionConfig;
+import cn.finalteam.galleryfinal.GalleryFinal;
+import cn.finalteam.galleryfinal.ThemeConfig;
+import cn.finalteam.galleryfinal.model.PhotoInfo;
+import cn.finalteam.galleryfinal.widget.GFImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/9/5 0005.
+ * 用户信息
+ */
+
+public class ActivityUserInfo extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.avatar)
+    /*RoundImageViewWithBorder ivAvatar;//头像*/
+            GFImageView ivAvatar;
+    @InjectView(R.id.tvUserName)
+    EditText tvUserName;//真实姓名
+    @InjectView(R.id.tvGender)
+    TextView tvGender;//性别
+    @InjectView(R.id.tvIdCode)
+    EditText edIdCode;//身份证号码
+    @InjectView(R.id.tvPhoneNum)
+    TextView tvPhoneNum;//电话号码
+    /*    @InjectView(R.id.tvAddress)
+        TextView tvAddress;//用户地址*/
+    @InjectView(R.id.tvNickName)
+    EditText tvNickName;//昵称
+    @InjectView(R.id.btnSave)
+    Button btnSave;//保存按钮
+    private String headImg;//头像url
+    private File picFile;
+    private int gender;//性别
+    private IdKeyboardUtil idKeyboardUtil;//自定义键盘
+    private HttpSubscriber httpSubscriber;
+    private FunctionConfig functionConfig;
+    // 所需的全部权限
+    static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.CAMERA,
+    };
+    private static final int REQUEST_CODE = 0; // 请求码
+    private PermissionChecker permissionChecker;
+    private boolean isUploadAvatar;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_user_info);
+        setToolbar(toolbar);
+        getUserInfo();//获取用户信息
+        //设置主题
+        //ThemeConfig.CYAN
+        ThemeConfig theme = ThemeConfig.DEFAULT;
+        //配置功能
+        functionConfig = new FunctionConfig.Builder().setEnableCamera(true)
+                .setEnableEdit(true)
+                .setEnableCrop(true)
+                .setEnableRotate(true)
+                .setCropSquare(true)
+                .setEnablePreview(true)
+                .build();
+
+        //配置imageLoader
+        cn.finalteam.galleryfinal.ImageLoader imageLoader = new GlideWithGalleryImageLoader();
+        CoreConfig coreConfig = new CoreConfig.Builder(this, imageLoader, theme).setFunctionConfig(functionConfig)
+                .build();
+        GalleryFinal.init(coreConfig);
+        permissionChecker = new PermissionChecker(this);
+        idKeyboardUtil = new IdKeyboardUtil(ActivityUserInfo.this, getApplicationContext(), edIdCode);
+        isUploadAvatar = false;
+    }
+
+    private void getUserInfo() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onGetUserInfoNext);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        MineAPI.getInstance().getUserInfo(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CustomerInfoBean> onGetUserInfoNext = new SubscriberOnNextListener<CustomerInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CustomerInfoBean customerInfoBean) {
+            tvUserName.setText(customerInfoBean.getUserName());
+            tvNickName.setText(customerInfoBean.getNickName());
+            if (customerInfoBean.getGender() == 1) {
+                tvGender.setText("男");
+            } else if (customerInfoBean.getGender() == 2) {
+                tvGender.setText("女");
+            }
+            edIdCode.setText(customerInfoBean.getIdCode());
+            tvPhoneNum.setText(customerInfoBean.getPhone());
+            //tvAddress.setText(customerInfoBean.getUser_address());
+          /*  Glide.with(ActivityUserInfo.this)
+                    .load("")
+                    .asBitmap()
+                    .placeholder(R.drawable.avatar_default)
+                    .error(R.drawable.avatar_default)
+                    .into(new BitmapImageViewTarget(ivAvatar) {
+                        @Override
+                        protected void setResource(Bitmap resource) {
+                            ivAvatar.setImageBitmap(resource, Color.WHITE, 0, true);
+                        }
+                    });*/
+            Glide.with(ActivityUserInfo.this)
+                    .load(API.url + customerInfoBean.getHeadImg())
+                    .placeholder(R.drawable.avatar_default)
+                    .error(R.drawable.avatar_default)
+                    .into(ivAvatar);
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void initListener() {
+        ivAvatar.setOnClickListener(this);
+        btnSave.setOnClickListener(this);
+        tvGender.setOnClickListener(this);
+        edIdCode.setOnFocusChangeListener(onFocusChangeListener);
+    }
+
+    //解除订阅
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.avatar:
+                //上传头像
+                new DialogPopupBottom(this)
+                        .builder()
+                        .setCanceledOnTouchOutside(false)
+                        .setCancelable(false)
+                        .addSheetItem("从相册选择照片", DialogPopupBottom.SheetItemColor.Blue, new DialogPopupBottom.OnSheetItemClickListener() {
+                            @Override
+                            public void onClick(int which) {
+                                GalleryFinal.openGallerySingle(Contants.REQUEST_CODE_GALLERY, functionConfig, onHanlderResultCallback);
+                            }
+                        })
+                        .addSheetItem("拍照", DialogPopupBottom.SheetItemColor.Blue, new DialogPopupBottom.OnSheetItemClickListener() {
+                            @Override
+                            public void onClick(int which) {
+                                if (permissionChecker.isLackPermissions(PERMISSIONS)) {
+                                    startPermissionsActivity();
+                                } else {
+                                    GalleryFinal.openCamera(Contants.REQUEST_CODE_CAMERA, functionConfig, onHanlderResultCallback);
+                                }
+                            }
+                        }).show();
+                break;
+            case R.id.btnSave:
+                if (StringUtil.isEmpty(tvUserName.getText().toString().trim())) {
+                    showToast("请填写真实姓名");
+                    return;
+                } else if (StringUtil.isEmpty(tvNickName.getText().toString().trim())) {
+                    showToast("请填写昵称");
+                    return;
+                } else if (StringUtil.isEmpty(edIdCode.getText().toString().trim())) {
+                    showToast("身份证不能为空");
+                    return;
+                } else if (!StringUtil.isIdNumber(edIdCode.getText().toString().trim())) {
+                    showToast("请填写正确的身份证号码");
+                    return;
+                } else if (StringUtil.isEmpty(tvGender.getText().toString().trim())) {
+                    showToast("请选择性别");
+                    return;
+                } else {
+                    saveUserInfo();
+                }
+                break;
+            case R.id.tvGender:
+                lifeSaverUtil.showDialogList(this, R.array.choose_sex, "请选择性别", new DialogWithList.OnSelectedListener() {
+                    @Override
+                    public void setOnSelectedListener(int position, String content) {
+                        tvGender.setText(content);
+                        if (content.equals("男")) {
+                            gender = 1;
+                        } else if (content.equals("女")) {
+                            gender = 2;
+                        }
+                    }
+                });
+                break;
+        }
+
+    }
+
+    //点击显示键盘
+    private View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                idKeyboardUtil.showKeyboard();
+                idKeyboardUtil.hideSoftInputMethod();
+            } else {
+                idKeyboardUtil.hideKeyboard();
+            }
+        }
+    };
+    private GalleryFinal.OnHanlderResultCallback onHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
+        @Override
+        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+            picFile = new File(resultList.get(0).getPhotoPath());
+            if (reqeustCode == Contants.REQUEST_CODE_GALLERY) {
+                GlideWithGalleryImageLoader.getInstance().displayImage(ActivityUserInfo.this, "file://" + resultList.get(0).getPhotoPath(), ivAvatar,
+                        getResources().getDrawable(R.drawable.active_default_image), Contants.IMAGE_WIDTH, Contants.IMAGE_HEIGHT);
+                Log.i(TAG, "onHanlderSuccess: " + resultList.get(0).getPhotoPath());
+                uploadAvatarPic(picFile);//上传图片
+            } else if (reqeustCode == Contants.REQUEST_CODE_CAMERA) {
+                GlideWithGalleryImageLoader.getInstance().displayImage(ActivityUserInfo.this, "file://" + resultList.get(0).getPhotoPath(), ivAvatar,
+                        getResources().getDrawable(R.drawable.active_default_image), Contants.IMAGE_WIDTH, Contants.IMAGE_HEIGHT);
+                uploadAvatarPic(picFile);
+            }
+        }
+
+        @Override
+        public void onHanlderFailure(int requestCode, String errorMsg) {
+
+        }
+    };
+
+    private void startPermissionsActivity() {
+        PermissionActivity.startActivityForResult(this, REQUEST_CODE, PERMISSIONS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 拒绝时, 关闭页面, 缺少主要权限, 无法运行
+        if (requestCode == REQUEST_CODE && resultCode == PermissionActivity.PERMISSIONS_DENIED) {
+            finish();
+        } else {
+            GalleryFinal.openCamera(Contants.REQUEST_CODE_CAMERA, functionConfig, onHanlderResultCallback);
+        }
+    }
+
+    //上传头像
+    private void uploadAvatarPic(File file) {
+        file = this.picFile;
+        unSub();
+        httpSubscriber = new HttpSubscriber(onUploadAvatarNextListener);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);//后台接收参数流的名字（file）,文件名(fileName),传输文件(requestFile)
+        MineAPI.getInstance().uploadAvatar(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CustomerInfoBean> onUploadAvatarNextListener = new SubscriberOnNextListener<CustomerInfoBean>() {
+        @Override
+        public void onStart() {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CustomerInfoBean customerInfoBean) {
+            hideLoadingDialog();
+            showToast("上传成功");
+            headImg = customerInfoBean.getHeadImg();
+            isUploadAvatar = true;
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    /**
+     * 保存用户信息
+     */
+    private void saveUserInfo() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onSaveInfoNextListener);
+        Map<Object, Object> map = new HashMap<>();
+        String userName = tvUserName.getText().toString().trim();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        map.put("headImg", headImg);
+        map.put("nickName", tvNickName.getText().toString().trim());
+        map.put("idCode", edIdCode.getText().toString().trim());
+        map.put("gender", gender);
+        map.put("userName", userName);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        MineAPI.getInstance().modifyUserInfo(httpSubscriber, body);
+
+    }
+
+    SubscriberOnNextListener<UserInfoBean> onSaveInfoNextListener = new SubscriberOnNextListener<UserInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(UserInfoBean userInfoBean) {
+            hideLoadingDialog();
+            preference.putString(LifeSaverPreference.OPERATION_CODE, userInfoBean.getOperation_code());
+            showToast("更改成功");
+            finish();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+}

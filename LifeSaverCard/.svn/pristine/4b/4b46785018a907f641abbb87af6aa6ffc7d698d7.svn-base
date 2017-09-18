@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.byth.lifesaver.MainActivity">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#383838"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextAppearance="@style/Toolbar.TitleText">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d6d6d6" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/main_radio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f9f9f9"
+            android:orientation="horizontal"
+            android:paddingTop="8dp">
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/home"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="true"
+                android:drawableTop="@drawable/bg_home"
+                android:text="首页" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/emergency"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_emergency"
+                android:text="救援" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/card"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_card"
+                android:text="生命宝" />
+
+            <com.byth.lifesaver.widget.RadioTagButton
+                android:id="@+id/mine"
+                style="@style/MainBottomRadioButtonStyle"
+                android:checked="false"
+                android:drawableTop="@drawable/bg_mine"
+                android:text="我的" />
+        </RadioGroup>
+    </RelativeLayout>
+</LinearLayout>

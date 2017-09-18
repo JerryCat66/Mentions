@@ -1,0 +1,386 @@
+package com.byth.lifesaver.base;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.util.LoadType;
+import com.fenguo.library.adapter.QuickAdapter;
+import com.fenguo.library.util.Preference;
+import com.fenguo.library.util.StringUtil;
+import com.fenguo.library.view.DialogLoading;
+import com.fenguo.library.view.refreshlayout.RefreshLayout;
+import com.fenguo.library.view.refreshlayout.RefreshLayoutDirection;
+
+import java.util.List;
+
+import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
+
+
+public abstract class BaseFragment extends Fragment {
+    private static final int SHOW_SHORT_TIME = Toast.LENGTH_SHORT;
+    protected final String TAG = "msg";
+    private View rootView;
+    private DialogLoading loading;
+    protected Activity activity;
+    protected Preference preference;
+    protected LoadType loadType;
+    protected Fragment tempFragment;
+
+    /**
+     * 是否显示dialog
+     */
+    protected boolean showDialog;
+
+    /**
+     * 当前页
+     */
+    protected int pageNum;
+    /**
+     * 最大页
+     */
+    protected int maxPage;
+
+    protected RefreshLayout refreshLayout;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        activity = getActivity();
+        preference = Preference.getInstance();
+        loadType = LoadType.ReplaceALL;
+        showDialog = true;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.inject(this, view);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        EventBus.getDefault().registerSticky(this);
+        receiveDataFromPreActivity();
+        initData();
+        initComponent();
+        initListener();
+
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if ((isVisibleToUser && isResumed())) {
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getUserVisibleHint()) {
+            immersionInit();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    /**
+     * 获取子类的类名
+     */
+    public String getClassName() {
+        return this.getClass().getSimpleName();
+    }
+
+    /**
+     * @param inflater
+     * @param resId
+     * @Description: 子类调用该办法，即可避免重复加载UI
+     */
+    public View setContentView(LayoutInflater inflater, int resId) {
+        if (rootView == null) {
+            rootView = inflater.inflate(resId, null);
+        }
+        // 缓存的rootView需要判断是否已经被加过parent，
+        // 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) rootView.getParent();
+        if (parent != null) {
+            parent.removeView(rootView);
+        }
+//        ButterKnife.inject(getActivity());
+        return rootView;
+    }
+
+    /**
+     * 初始化RefreshLayout
+     *
+     * @param refreshLayout
+     */
+    protected void setRefreshLayout(RefreshLayout refreshLayout) {
+        refreshLayout.setColorSchemeResources(R.color.color_secondary);
+        this.refreshLayout = refreshLayout;
+
+    }
+
+    /**
+     * 子类可重新该方法，用于刷新数据
+     */
+    public void refreshDatas() {
+        if (activity.isFinishing() || !isVisible()) {
+            return;
+        }
+
+
+    }
+
+    /**
+     * 刷新数据后，根据不同的状态进行对应的操作
+     *
+     * @param adapter
+     * @param datas
+     */
+    protected void setListViewStatus(QuickAdapter adapter, List datas) {
+        if (refreshLayout == null) {
+            return;
+        }
+        if (pageNum == maxPage) {
+            refreshLayout.setDirection(RefreshLayoutDirection.TOP);
+        }
+        if (loadType.getKey() == LoadType.AddAll.getKey()) {
+            adapter.addAll(datas);
+        } else {
+            adapter.replaceAll(datas);
+        }
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
+    }
+
+
+    public void showLoadingDialog() {
+        if (loading == null) {
+            loading = new DialogLoading(getActivity());
+        }
+        loading.show();
+    }
+
+
+    public void hideLoadingDialog() {
+        if (loading != null) {
+            loading.dismiss();
+        }
+    }
+
+    /**
+     * @param resId 要显示的内容
+     * @return void 返回类型
+     * @Description: 显示一个Toast信息
+     */
+    public void showToast(int resId) {
+        Toast.makeText(getActivity(), resId, SHOW_SHORT_TIME).show();
+    }
+
+    /**
+     * @param content 要显示的内容
+     * @Description: 显示一个Toast信息
+     */
+    public void showToast(String content) {
+        if (StringUtil.isEmpty(content) || content == null || content == "null") {
+            return;
+        }
+        Toast.makeText(getActivity(), content, SHOW_SHORT_TIME).show();
+    }
+
+    /**
+     * @param pClass activity的类名
+     * @param bundle 传进去的参数，可以为null
+     * @return void 返回类型
+     * @Description: 打开一个新的activity，不关闭当前的activity
+     */
+    protected void openActivityNotClose(Class<?> pClass, Bundle bundle) {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), pClass);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+        getActivity().overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+    }
+
+    /**
+     * @param pClass activity的类名
+     * @param bundle 传进去的参数，可以为null
+     * @return void 返回类型
+     * @Description: 打开一个新的activity，关闭当前的activity
+     */
+    protected void openActivity(Class<?> pClass, Bundle bundle) {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), pClass);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+        getActivity().overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+    }
+
+
+    /**
+     * @param pClass activity的类名
+     * @Description: 打开一个新的activity，关闭当前的activity，不传参
+     */
+    protected void openActivity(Class<?> pClass) {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), pClass);
+        startActivity(intent);
+        getActivity().finish();
+        getActivity().overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+    }
+
+    /**
+     * @param bundle
+     * @param requestCode
+     * @param target      设定文件
+     * @Description: 带回调的跳转
+     */
+    protected void startForResult(Bundle bundle, int requestCode, Class<?> target) {
+        Intent intent = new Intent(getActivity(), target);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivityForResult(intent, requestCode);
+//        overridePendingTransition(com.fenguo.library.R.anim.slide_left_in, com.fenguo.library.R.anim.slide_left_out);
+        // overridePendingTransition(R.anim.slide_left_in,
+        // R.anim.slide_left_out);
+    }
+
+    /**
+     * Description: 接受上一个 activity传递的数据<br>
+     */
+    protected abstract void receiveDataFromPreActivity();
+
+    /**
+     * Description: 初始化图形界面<br>
+     */
+    protected abstract void initComponent();
+
+    /**
+     * Description: 初始化监听器<br>
+     */
+    protected abstract void initListener();
+
+    /**
+     * Description: 初始化数组<br>
+     */
+    protected abstract void initData();
+
+    protected abstract void immersionInit();
+//    /**
+//     * @param containerViewId
+//     * @param tempFragment
+//     * @param tag
+//     * @param isAdd           设定文件
+//     * @Description: 用tempFragment替代当前Fragment, 并给tempFragment增加一个tag，以便下次调用，不用新建
+//     */
+//    protected void replaceFragment(int containerViewId, Fragment tempFragment, String tag,
+//                                   boolean isAdd) {
+//        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+//        transaction.replace(containerViewId, tempFragment, tag);
+//        if (!isAdd) {
+//            transaction.addToBackStack(tag);
+//        }
+//        transaction.commitAllowingStateLoss();
+//    }
+
+    /**
+     * @param containerViewId
+     * @param tempFragment
+     * @param tag
+     * @param isAdd           设定文件
+     * @Description: 用tempFragment替代当前Fragment, 并不是子Fragment, 并给tempFragment增加一个tag，以便下次调用，不用新建
+     */
+    protected void replaceFragment(int containerViewId, Fragment tempFragment, String tag,
+                                   boolean isAdd) {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(containerViewId, tempFragment, tag);
+        if (!isAdd) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commitAllowingStateLoss();
+    }
+
+    /**
+     * @param @param tag
+     * @param @param fragment 设定文件
+     * @return void 返回类型
+     * @throws
+     * @Title: replaceFragment
+     * @Description: 替换Fragment，在替换前并检测是否已经在缓存中
+     */
+    protected void replaceFragment(int containerViewId, String tag, Fragment fragment) {
+        boolean isAdd = true;
+        tempFragment = getChildFragmentManager().findFragmentByTag(tag);
+        if (tempFragment == null) {
+            tempFragment = fragment;
+            isAdd = false;
+        }
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(containerViewId, tempFragment, tag);
+        if (!isAdd) {
+            transaction.addToBackStack(tag);
+        }
+        transaction.commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEventMainThread(Object event) {
+
+    }
+
+    //拨打电话
+    public void telPhone(String mobile) {
+        if (StringUtil.isEmpty(mobile)) {
+            showToast("该客户暂未提供手机号码");
+            return;
+        }
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mobile));//跳转到拨号界面，同时传递电话号码
+        startActivity(dialIntent);
+    }
+
+ /*   *//**
+     * 复审判断
+     * @return
+     *//*
+    public boolean getReviewStatus(){
+        if(preference.getInt(LinanPreference.MINE_PROFILE_IS_STATE) == ProfileExamine.Have.getKey()){
+            return true;
+        }
+        Toast.makeText(getActivity(),"审核不通过,无权限操作",Toast.LENGTH_SHORT).show();
+        return  false;
+    }*/
+}

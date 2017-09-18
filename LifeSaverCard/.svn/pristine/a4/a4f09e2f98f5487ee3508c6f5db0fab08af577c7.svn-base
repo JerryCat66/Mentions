@@ -1,0 +1,25 @@
+package com.byth.lifesaver.util;
+
+/**
+ * Created by Administrator on 2017/5/23 0023.
+ * 生命宝若干数据持久化
+ */
+
+public class LifeSaverPreference {
+    /**
+     * 第一次进入
+     */
+    public static final String FIRST_IN="first_in";
+    /**
+     * 账号
+     */
+    public static final String ACCOUNT="account";
+    /**
+     * 密码
+     */
+    public static final String PASSWORD="password";
+    /**
+     * 复审判断
+     */
+    public static final String  MINE_PROFILE_IS_STATE="mine_profile_is_state";
+}

@@ -1,0 +1,155 @@
+package com.byth.lifesaver.function.auth;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v7.widget.AppCompatButton;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.util.LifeSaverUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/23 0023.
+ * 注册
+ */
+
+public class RegisterActivity extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.sv_root)
+    ScrollView svRoot;
+    @InjectView(R.id.input_account)
+    EditText edAccount;
+    @InjectView(R.id.input_password)
+    EditText edPassword;
+    @InjectView(R.id.input_password_confirm)
+    EditText edPassword_Confirm;
+    @InjectView(R.id.editVerify)
+    EditText edVerify;
+    @InjectView(R.id.btnVerify)
+    Button btnVerify;
+    @InjectView(R.id.btn_signUp)
+    AppCompatButton btnSignUp;
+    @InjectView(R.id.link_login)
+    TextView tvLogin;
+    @InjectView(R.id.chkBoxAgree)
+    CheckBox cbAgree;
+    private Context mContext;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_register);
+        ImmersionBar.with(this)
+                .navigationBarColor(R.color.transparent)
+                .statusBarColor(R.color.transparent)
+                .init();
+        mContext = this;
+        applyBlur();
+    }
+
+    @Override
+    protected void initListener() {
+        btnSignUp.setOnClickListener(this);
+        tvLogin.setOnClickListener(this);
+        btnVerify.setOnClickListener(this);
+    }
+
+    private void applyBlur() {
+        Drawable db = getResources().getDrawable(R.drawable.bg_login);
+        BitmapDrawable drawable = (BitmapDrawable) db;
+        Bitmap bgBitmap = drawable.getBitmap();
+        //处理得到模糊效果的图
+        RenderScript renderScript = RenderScript.create(mContext);
+        // Allocate memory for Renderscript to work with
+        final Allocation input = Allocation.createFromBitmap(renderScript, bgBitmap);
+        final Allocation output = Allocation.createTyped(renderScript, input.getType());
+        // Load up an instance of the specific script that we want to use.
+        ScriptIntrinsicBlur scriptIntrinsicBlur = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript));
+        scriptIntrinsicBlur.setInput(input);
+        // Set the blur radius
+        scriptIntrinsicBlur.setRadius(25);
+        // Start the ScriptIntrinisicBlur
+        scriptIntrinsicBlur.forEach(output);
+        // Copy the output to the blurred bitmap
+        output.copyTo(bgBitmap);
+        renderScript.destroy();
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bgBitmap);
+        svRoot.setBackground(bitmapDrawable);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_signUp:
+                checkRequire();
+                break;
+            case R.id.btnVerify:
+                if (StringUtil.isEmpty(edVerify.getText().toString().trim())) {
+                    showToast("手机号码不能为空");
+                    return;
+                }
+                getVerifyCode(edVerify.getText().toString().trim());
+                break;
+            case R.id.link_login:
+                openActivity(LoginActivity.class, null);
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        String phone = edAccount.getText().toString().trim();
+        String verifyCode = edVerify.getText().toString().trim();
+        String password = edPassword.getText().toString().trim();
+        String password_confirm = edPassword_Confirm.getText().toString().trim();
+        if (StringUtil.isEmpty(phone)) {
+            showToast("请输入手机号码");
+            return;
+        } else if (phone.length() < 11) {
+            showToast("请输入正确的手机号码");
+            return;
+        } else if (StringUtil.isEmpty(verifyCode)) {
+            showToast("请输入验证码");
+            return;
+        } else if (password.length() < 6 || password_confirm.length() < 6) {
+            showToast("密码长度不能小于6位");
+            return;
+        }
+        if (!lifeSaverUtil.checkPassword(password,6,18)||!lifeSaverUtil.checkPassword(password_confirm,6,18)){
+            showToast("密码程度应在6-18位");
+        }
+    }
+
+    /**
+     * 获取验证码
+     */
+    private void getVerifyCode(String phone) {
+
+    }
+}

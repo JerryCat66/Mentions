@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <RadioGroup
+        android:id="@+id/order_radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.byth.lifesaver.widget.RadioTagButton
+            android:id="@+id/radio_order_all"
+            style="@style/ImproveStyle"
+            android:checked="true"
+            android:text="全部" />
+
+        <com.byth.lifesaver.widget.RadioTagButton
+            android:id="@+id/radio_order_wait_for_paying"
+            style="@style/ImproveStyle"
+            android:text="待付款" />
+
+        <com.byth.lifesaver.widget.RadioTagButton
+            android:id="@+id/radio_order_wait_for_receive"
+            style="@style/ImproveStyle"
+            android:text="待收货" />
+
+        <com.byth.lifesaver.widget.RadioTagButton
+            android:id="@+id/radio_order_is_finished"
+            style="@style/ImproveStyle"
+            android:text="已完成" />
+    </RadioGroup>
+
+    <include layout="@layout/horizontal_line" />
+
+    <FrameLayout
+        android:id="@+id/order_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/order_viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</LinearLayout>

@@ -1,0 +1,90 @@
+package com.byth.lifesaver.adapter;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+
+import com.byth.lifesaver.bean.AdListBean;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 图片轮播适配器
+ */
+
+public class ViewPagerAdapter extends PagerAdapter {
+    private ArrayList<String> adList = null;//广告图片列表
+    private Context mContext;
+    private SharedPreferences sp = null;
+    private String update = null;//上传广告的时间
+    private String url = null;//广告url
+    private String adName = null;//广告标题
+    public static int pageIndex = 0;//广告滚动位置索引
+    private int status;//从哪里进入的广告轮播
+    private List<AdListBean.Advertisement> list = new ArrayList<AdListBean.Advertisement>();
+
+    public ViewPagerAdapter(Context context, int status) {
+        this.mContext = context;
+        this.status = status;
+        adList = new ArrayList<>();
+        sp = context.getSharedPreferences("AD", Activity.MODE_PRIVATE);
+        if (!adList.isEmpty()) {
+            return;
+        } else {
+            getInitJudgeUpdate();
+        }
+    }
+
+    @Override
+    public int getCount() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return false;
+    }
+
+    /**
+     * 初始化广告图片列表，并访问服务器端广告是否有更新
+     */
+    private void getInitJudgeUpdate() {
+        File file = getImageAddressDir();
+        String[] str = file.list();
+        for (String s : str) {
+            if (s.endsWith(".img")) {
+                adList.add(s);
+            }
+        }
+    }
+
+    /**
+     * 图片保存地址
+     *
+     * @return
+     */
+    private File getImageAddressDir() {
+        return mContext.getDir("adimage" + status, Activity.MODE_PRIVATE);
+    }
+
+    /**
+     * 添加广告图片名字到列表
+     */
+    public void addItem(String str) {
+        adList.add(str);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 清除广告图片列表的所有数据
+     */
+    public void clear() {
+        adList.clear();
+        notifyDataSetChanged();
+    }
+}

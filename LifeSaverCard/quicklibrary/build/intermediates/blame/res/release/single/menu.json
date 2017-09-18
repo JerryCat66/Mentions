@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaverCard\\quicklibrary\\build\\intermediates\\res\\merged\\release\\menu\\menu_webview.xml",
+        "source": "D:\\AndroidProjects\\LifeSaverCard\\quicklibrary\\src\\main\\res\\menu\\menu_webview.xml"
+    },
+    {
+        "merged": "D:\\AndroidProjects\\LifeSaverCard\\quicklibrary\\build\\intermediates\\res\\merged\\release\\menu\\save.xml",
+        "source": "D:\\AndroidProjects\\LifeSaverCard\\quicklibrary\\src\\main\\res\\menu\\save.xml"
+    }
+]

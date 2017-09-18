@@ -1,0 +1,79 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/7/4 0004.
+ * 激活成功页面
+ */
+
+public class ActivityActiveSuccess extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.btnBackToHome)
+    Button btnBackToHome;
+    @InjectView(R.id.activation)
+    TextView activation;
+    @InjectView(R.id.cardNum)
+    TextView cardNum;
+    @InjectView(R.id.deadDate)
+    TextView deadDate;
+    @InjectView(R.id.userName)
+    TextView userName;
+    @InjectView(R.id.bindPhone)
+    TextView bindPhone;
+    @InjectView(R.id.idNum)
+    TextView idNum;
+    @InjectView(R.id.bloodType)
+    TextView bloodType;
+    @InjectView(R.id.hot_line)
+    TextView hotLine;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_active_success);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .fitsSystemWindows(true)
+                .statusBarColor(R.color.color_main)
+                .statusBarDarkFont(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        btnBackToHome.setOnClickListener(this);
+        hotLine.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnBackToHome:
+                close();
+                break;
+            case R.id.hot_line:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+}

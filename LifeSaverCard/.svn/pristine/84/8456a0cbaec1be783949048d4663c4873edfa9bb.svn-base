@@ -1,0 +1,167 @@
+package com.byth.lifesaver.function.card.fragment;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.bean.GoodInfoBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.widget.MyWebView;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/1 0001.
+ * 卡片详情下拉加载更多
+ */
+
+public class FragmentCardDetailNextPager extends BaseFragment {
+    @InjectView(R.id.rl_nextPager)
+    RelativeLayout rlNextPager;
+    @InjectView(R.id.nextPager_webView)
+    MyWebView myWebView;
+    @InjectView(R.id.progressbar)
+    ProgressBar mProgressBar;
+    private String url;
+    private HttpSubscriber httpSubscriber;
+
+    public static FragmentCardDetailNextPager newInstance(Context context, int position) {
+        FragmentCardDetailNextPager fragmentCardDetailNextPager = new FragmentCardDetailNextPager();
+        return fragmentCardDetailNextPager;
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_product_detail_next_pager);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        getDetailUrl();
+        Log.i(TAG, "initComponent: " + url);
+        if (myWebView != null) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 获取详情url
+     */
+    private void getDetailUrl() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+        httpSubscriber = new HttpSubscriber(onNextListener);
+        Map<String, String> map = new HashMap<>();
+        GoodsAPI.getInstance().getGoodsInfo(httpSubscriber, map);
+    }
+
+    SubscriberOnNextListener<GoodInfoBean> onNextListener = new SubscriberOnNextListener<GoodInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(GoodInfoBean goodInfoBean) {
+//            url = goodInfoBean.getDescription();
+            hideLoadingDialog();
+            url = "http://192.168.10.158:8080/WeixinService/";
+            setWebViewConfig(myWebView, url);
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    public void initView() {
+        getDetailUrl();
+        Log.i(TAG, "initComponent: " + url);
+        if (myWebView != null) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * webView配置
+     *
+     * @param webView
+     */
+    private void setWebViewConfig(MyWebView webView, String url) {
+        url = this.url;
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        webView.requestFocus();
+        settings.setSupportZoom(false);
+        settings.setDefaultTextEncodingName("utf-8");
+        webView.loadUrl(url);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
+    }
+}

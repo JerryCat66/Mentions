@@ -1,0 +1,33 @@
+package com.byth.lifesaver.bean;
+
+/**
+ * Created by Administrator on 2017/8/8 0008.
+ */
+
+public class OrderPageBean {
+    public OrderDtoorder orderDtoorder;
+
+    private int maxPage;
+
+    public int getMaxPage() {
+        return maxPage;
+    }
+
+    public static class OrderDtoorder {
+        private String Status;
+        private int pageNum;
+        private int pageSize;
+
+        public void setStatus(String status) {
+            Status = status;
+        }
+
+        public void setPageNum(int pageNum) {
+            this.pageNum = pageNum;
+        }
+
+        public void setPageSize(int pageSize) {
+            this.pageSize = pageSize;
+        }
+    }
+}

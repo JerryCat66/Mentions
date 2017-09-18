@@ -1,0 +1,50 @@
+package com.byth.lifesaver.api;
+
+import com.byth.lifesaver.api.request.GoodServiceRequest;
+import com.byth.lifesaver.bean.DefaultAddressBean;
+import com.byth.lifesaver.bean.GoodAddressBean;
+import com.byth.lifesaver.bean.GoodInfoBean;
+import com.byth.lifesaver.http.HttpMethod;
+import com.byth.lifesaver.http.HttpResult;
+
+import java.util.Map;
+
+import rx.Observable;
+import rx.Subscriber;
+
+/**
+ * Created by Administrator on 2017/6/28 0028.
+ * 商品信息API
+ */
+
+public class GoodsAPI extends HttpMethod {
+    private volatile static GoodsAPI goodsAPI;
+    private GoodServiceRequest request = retrofitBuild().create(GoodServiceRequest.class);
+
+    private GoodsAPI() {
+
+    }
+
+    public static GoodsAPI getInstance() {
+        if (goodsAPI == null) {
+            synchronized (GoodsAPI.class) {
+                if (goodsAPI == null) {
+                    goodsAPI = new GoodsAPI();
+                }
+            }
+        }
+        return goodsAPI;
+    }
+
+    //获取商品信息
+    public void getGoodsInfo(Subscriber<HttpResult<GoodInfoBean>> subscriber, Map<String, String> map) {
+        Observable observable = request.getGoodsInfo(map).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取默认地址
+    public void getDefaultAddress(Subscriber<HttpResult<GoodAddressBean>> subscriber, Map<String, String> map) {
+        Observable observable = request.getDefaultAddress(map).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+}

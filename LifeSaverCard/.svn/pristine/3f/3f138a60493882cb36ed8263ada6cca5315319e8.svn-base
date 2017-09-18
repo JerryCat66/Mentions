@@ -1,0 +1,293 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.RadioButtonAdapter;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.bean.DefaultAddressBean;
+import com.byth.lifesaver.bean.GoodAddressBean;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.ImageLoaderUtil;
+import com.byth.lifesaver.widget.MyGridView;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/2 0002.
+ * 订单确认
+ */
+
+public class ActivityOrderConfirm extends FrameActivity implements View.OnClickListener, RadioButtonAdapter.IRadioNumClickListener {
+    private static final String TAG = "msg";
+    @InjectView(R.id.num_year)
+    MyGridView numYears;//年限选择
+    @InjectView(R.id.price_card)
+    TextView tvPrice;//卡片价格
+    @InjectView(R.id.ig_card)
+    ImageView ivCard;//图片
+    @InjectView(R.id.goodsName)
+    TextView tvGoodsName;//商品名称
+    @InjectView(R.id.trade_btn_num_reduce)
+    ImageButton ibReduce;//减少按钮
+    @InjectView(R.id.trade_btn_num_raise)
+    ImageButton ibRaise;//增加按钮
+    @InjectView(R.id.trade_edit_num_input)
+    TextView tvNum;//数量
+    @InjectView(R.id.total_price)
+    TextView tvTotalPrice;//总额
+    @InjectView(R.id.btn_pay_confirm)
+    AppCompatButton btnConfirm;//确认支付
+    @InjectView(R.id.info_customer)
+    LinearLayout llContact;
+    @InjectView(R.id.contact_person)
+    TextView tvContact;//联系人
+    @InjectView(R.id.phone_num)
+    TextView tvPhoneNum;//电话
+    @InjectView(R.id.address)
+    TextView tvAddress;//地址
+    @InjectView(R.id.isDefault)
+    TextView tvIsDefault;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    private RadioButtonAdapter adapter;
+    private double card_price;//卡片价格,年限对应单价
+    private double totalPrice;//总额
+    Bundle bundle = new Bundle();
+    private HttpSubscriber httpSubscriber;
+    /* private List<GoodAddressBean.GoodsDto> goodsInfoList;//商品信息list
+     private List<GoodAddressBean.GoodsDto.CostDto> costList;//价格年限list
+     private List<GoodAddressBean.addrDto> addressList;//地址信息list*/
+    DefaultAddressBean defaultAddressBean = new DefaultAddressBean();
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+   /*     goodsInfoList = new ArrayList<>();
+        costList = new ArrayList<>();
+        addressList = new ArrayList<>();*/
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_order_confirm);
+        setToolbar(mToolbar);
+        adapter = new RadioButtonAdapter(this, 0);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        numYears.setAdapter(adapter);
+        getDefaultAddress();
+    }
+
+    @Override
+    protected void initListener() {
+        ibRaise.setOnClickListener(this);
+        ibReduce.setOnClickListener(this);
+        btnConfirm.setOnClickListener(this);
+        llContact.setOnClickListener(this);
+        adapter.registerOnClick(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String num = tvNum.getText().toString().trim();
+        double result = StringUtil.toDouble(num);
+        switch (v.getId()) {
+            case R.id.trade_btn_num_raise:
+                double finalResult = ++result;
+                tvNum.setText(String.valueOf(finalResult));
+                totalPrice = card_price * finalResult;
+                tvTotalPrice.setText("总额:" + String.valueOf(totalPrice) + "元");
+                bundle.putDouble("totalPrice", totalPrice);
+                break;
+            case R.id.trade_btn_num_reduce:
+                if (result <= 1) {
+                    showToast("商品数量不能小于1");
+                } else {
+                    double finalResult2 = --result;
+                    tvNum.setText(String.valueOf(finalResult2));
+                    totalPrice = card_price * finalResult2;
+                    tvTotalPrice.setText("总额:" + String.valueOf(totalPrice) + "元");
+                    bundle.putDouble("totalPrice", totalPrice);
+                }
+                break;
+            case R.id.btn_pay_confirm:
+                checkRequire();
+                break;
+            case R.id.info_customer:
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        Log.i("money is", "==========" + bundle);
+        openActivityNotClose(ActivityChoosePayMethod.class, bundle);
+    }
+
+    /**
+     * 获取默认地址
+     */
+    private void getDefaultAddress() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        } else {
+            httpSubscriber = new HttpSubscriber(onNextListener);
+            Map<String, String> map = new HashMap<>();
+            GoodsAPI.getInstance().getDefaultAddress(httpSubscriber, map);
+        }
+    }
+
+    /* SubscriberOnNextListener<DefaultAddressBean> onNextListener = new SubscriberOnNextListener<DefaultAddressBean>() {
+         @Override
+         public void onStart() {
+             showLoadingDialog();
+         }
+
+         @Override
+         public void onNext(DefaultAddressBean defaultAddressBean) {
+             tvContact.setText("收货人:" + defaultAddressBean.getConsignee());
+             tvPhoneNum.setText("联系电话:" + defaultAddressBean.getConsigneeMobile());
+             tvAddress.setText("收货地址:" + defaultAddressBean.getAddr());
+             if (defaultAddressBean.getDefaultFlag().equals("Y")) {
+                 tvIsDefault.setVisibility(View.VISIBLE);
+             } else {
+                 tvIsDefault.setVisibility(View.GONE);
+             }
+             hideLoadingDialog();
+         }
+
+         @Override
+         public void onApiError(ApiException e) {
+             hideLoadingDialog();
+         }
+
+         @Override
+         public void onNetworkError(Throwable e) {
+             hideLoadingDialog();
+         }
+
+         @Override
+         public void onOtherError(Throwable e) {
+             hideLoadingDialog();
+         }
+
+         @Override
+         public void onCompleted() {
+             hideLoadingDialog();
+         }
+     };*/
+    SubscriberOnNextListener<HttpResult> onNextListener = new SubscriberOnNextListener<HttpResult>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(HttpResult defaultAddressBean) {
+            hideLoadingDialog();
+            Log.i(TAG, "onNext: ====???" + JsonUtil.toJson(defaultAddressBean.getData()));
+         /*   tvContact.setText("收货人:" + defaultAddressBean.getConsignee());
+            tvPhoneNum.setText("联系电话:" + defaultAddressBean.getConsigneeMobile());
+            tvAddress.setText("收货地址:" + defaultAddressBean.getAddr());
+            if (defaultAddressBean.getDefaultFlag().equals("Y")) {
+                tvIsDefault.setVisibility(View.VISIBLE);
+            } else {
+                tvIsDefault.setVisibility(View.GONE);
+            }*/
+            /*goodsInfoList = goodsList.getGoodsDto();
+            addressList = goodsList.getAddrDto();
+            costList = goodsList.getCostList();*/
+           /* Log.i(TAG, "onNext: goodInfoList====>>>>" + JsonUtil.toJson(goodsInfoList));
+            Log.i(TAG, "onNext: addressList=====>>>>" + JsonUtil.toJson(addressList));
+            Log.i(TAG, "onNext: costList====>>>" + JsonUtil.toJson(costList));*/
+         /*   for (int i = 0; i < addressList.size(); i++) {
+                tvContact.setText("收货人:" + addressList.get(i).getConsignee());
+                tvPhoneNum.setText("联系电话:" + addressList.get(i).getConsigneeMobile());
+                tvAddress.setText("收货地址:" + addressList.get(i).getAddr());
+                if (addressList.get(i).getDefaultFlag().equals("Y")) {
+                    tvIsDefault.setVisibility(View.VISIBLE);
+                } else {
+                    tvIsDefault.setVisibility(View.GONE);
+                }
+            }*/
+            /*for (int j = 0; j < goodsInfoList.size(); j++) {
+                String imageUrl = goodsInfoList.get(j).getImage();
+                ImageLoaderUtil.display(ActivityOrderConfirm.this, ivCard, imageUrl);
+                tvGoodsName.setText(goodsInfoList.get(j).getGoodsName());
+            }
+            for (int k = 0; k < costList.size(); k++) {
+                card_price = costList.get(1).getYearPrice() * costList.get(1).getYears();
+                tvPrice.setText(String.valueOf(card_price) + "元");
+            }*/
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    @Override
+    public void onClick(RadioButtonAdapter context, String numYear) {
+      /*  String num = tvNum.getText().toString().trim();
+        double result = StringUtil.toDouble(num);
+        double price = 1600;
+        String numWithoutYear = numYear.replaceAll("年", "");
+        double total = result * price * StringUtil.toDouble(numWithoutYear);
+        tvTotalPrice.setText("总额:" + String.valueOf(total) + "元");
+        this.totalPrice = String.valueOf(total);
+        bundle.putString("totalPrice", totalPrice);*/
+      /*  numYear = "1";
+        for (int y = 0; y < costList.size(); y++) {
+            double year = StringUtil.toDouble(numYear);
+            card_price = costList.get(y).getYearPrice() * year;
+            tvPrice.setText(String.valueOf(card_price) + "元");
+        }*/
+    }
+}

@@ -1,0 +1,41 @@
+package com.byth.lifesaver.api.request;
+
+import com.byth.lifesaver.bean.CustomerInfoBean;
+import com.byth.lifesaver.bean.UserInfoBean;
+import com.byth.lifesaver.http.HttpResult;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import rx.Observable;
+
+/**
+ * Created by Administrator on 2017/9/4 0004.
+ * 我的页面接口
+ */
+
+public interface MineServiceRequest {
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//转换成json格式
+    @POST("extUser/myOwnInfo")
+    Observable<HttpResult<CustomerInfoBean>> getUserInfo(@Body RequestBody body);
+
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//转换成json格式
+    @POST("extUser/addAddr")
+    Observable<HttpResult> addAddress(@Body RequestBody body);
+
+    @Multipart
+    @POST("extUser/upload")
+    Observable<HttpResult<CustomerInfoBean>> uploadAvatar(@Part MultipartBody.Part part);
+
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//转换成json格式
+    @POST("extUser/changeAddr")
+    Observable<HttpResult> modifyAddress(@Body RequestBody body);
+
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//转换成json格式
+    @POST("extUser/chageOwnInfo")
+    Observable<HttpResult<UserInfoBean>> modifyUserInfo(@Body RequestBody body);
+}

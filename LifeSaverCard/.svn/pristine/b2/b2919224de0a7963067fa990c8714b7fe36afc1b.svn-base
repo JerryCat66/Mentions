@@ -1,0 +1,57 @@
+package com.byth.lifesaver.bean;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2017/8/7 0007.
+ * 订单bean
+ */
+
+public class OrderBean {
+    private List<data> data;
+
+    public List<OrderBean.data> getData() {
+        return data;
+    }
+
+
+    public class data {
+        private int id;//订单id
+        private String orderStatus;//订单状态
+        private double sum;//支付总金额
+        private String goodsName; //商品类型
+        private String image;//商品图片
+        private int years; //年费
+        private String orderType;//订单状态
+
+        public int getId() {
+            return id;
+        }
+
+        public String getOrderStatus() {
+            return orderStatus;
+        }
+
+        public double getSum() {
+            return sum;
+        }
+
+        public String getGoodsName() {
+            return goodsName;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public int getYears() {
+            return years;
+        }
+
+        public String getOrderType() {
+            return orderType;
+        }
+    }
+
+
+}

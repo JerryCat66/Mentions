@@ -1,0 +1,352 @@
+package com.byth.lifesaver.function.auth;
+
+import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.AuthAPI;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.bean.WxInfoBean;
+import com.byth.lifesaver.encrypt.AES256Cipher;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.byth.lifesaver.util.MyCountDownTimer;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/7/21 0021.
+ * 快速注册
+ */
+
+public class QuickRegisterActivity extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.input_account)
+    EditText inputAccount;
+    @InjectView(R.id.editVerify)
+    EditText editVerify;
+    @InjectView(R.id.btnVerify)
+    Button btnVerify;
+    @InjectView(R.id.input_password)
+    EditText inputPassword;
+    @InjectView(R.id.chkBoxAgree)
+    CheckBox chkBoxAgree;
+    @InjectView(R.id.btn_signUp)
+    AppCompatButton btnSignUp;//快速注册按钮
+    @InjectView(R.id.hot_line)
+    TextView hotLine;
+
+    private MyCountDownTimer downTimer;//倒计时
+    private HttpSubscriber httpSubscriber;
+    private String password;
+    private String phone;
+    private String verifyCode;
+    private String type;//获取验证码类型
+    private String openid;
+    private WxInfoBean.UserDto userDto;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+        openid = preference.getString(LifeSaverPreference.OPENID);
+        Log.i(TAG, "receiveDataFromPreActivity: " + openid);
+    }
+
+    @Override
+    protected void initData() {
+        userDto = new WxInfoBean.UserDto();
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_quick_register);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .fitsSystemWindows(true)
+                .statusBarColor(R.color.color_main)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+        btnVerify.setOnClickListener(this);
+        btnSignUp.setOnClickListener(this);
+        hotLine.setOnClickListener(this);
+        inputPassword.addTextChangedListener(textWatcher);
+        inputAccount.addTextChangedListener(textWatcher2);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_signUp:
+                checkRequire();
+                break;
+            case R.id.btnVerify:
+                if (StringUtil.isEmpty(inputAccount.getText().toString().trim())) {
+                    showToast("手机号码不能为空");
+                    return;
+                }
+                downTimer = new MyCountDownTimer(btnVerify);
+                downTimer.start();
+                btnVerify.setBackgroundResource(R.drawable.btn_gray);
+                getVerifyCode(inputAccount.getText().toString().trim());
+                break;
+            case R.id.hot_line://公司电话
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        phone = inputAccount.getText().toString().trim();
+        verifyCode = editVerify.getText().toString().trim();
+        password = inputPassword.getText().toString().trim();
+        if (StringUtil.isEmpty(phone)) {
+            showToast("请输入手机号码");
+            return;
+        } else if (phone.length() < 11) {
+            showToast("请输入正确的手机号码");
+            return;
+        } else if (StringUtil.isEmpty(verifyCode)) {
+            showToast("请输入验证码");
+            return;
+        } else if (password.length() < 6) {
+            showToast("密码长度不能小于6位");
+            return;
+        } else if (!lifeSaverUtil.checkPassword(password, 6, 18)) {
+            showToast("密码长度应在6-18位");
+            return;
+        } else if (!chkBoxAgree.isChecked()) {
+            showToast("请勾选服务条框");
+            return;
+        } else {
+            register();
+        }
+    }
+
+    /**
+     * 输入监听
+     */
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            showColorWithInput();
+        }
+    };
+    private TextWatcher textWatcher2 = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String phoneStr = s.toString();
+            if (phoneStr.length() == 11) {
+                checkMobile(phoneStr);
+            }
+        }
+    };
+
+    /**
+     * 此处输入手机号码应该验证手机号码是否已经注册,是否有效,调用接口
+     *
+     * @param phone
+     */
+    private void checkMobile(String phone) {
+        if (StringUtil.isMobile(phone)) {
+            btnVerify.setClickable(true);
+            btnVerify.setBackgroundResource(R.drawable.shape_with_corner_auth_code);
+        } else {
+            showToast("请输入正确的手机号码");
+            btnVerify.setClickable(false);
+            btnVerify.setBackgroundResource(R.drawable.btn_gray);
+        }
+    }
+
+    //获取验证码
+    private void getVerifyCode(String phone) {
+        unSub();
+        httpSubscriber = new HttpSubscriber<>(onGetVerifyCodeNextListener);
+        phone = inputAccount.getText().toString().trim();
+        type = "RG";
+        HashMap<String, String> map = new HashMap<>();
+        map.put("mobileNo", phone);
+        map.put("type", type);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        AuthAPI.getInstance().getRegisterCodeWithRetrofit(httpSubscriber, body);
+    }
+
+    //注册
+    private void register() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onQuickRegisterNextListener);
+        verifyCode = editVerify.getText().toString().trim();
+        type = "RG";
+        phone = inputAccount.getText().toString().trim();
+        try {
+            password = AES256Cipher.AES_Encode(inputPassword.getText().toString().trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userDto.setPassword(password);
+        userDto.setOpenid(openid);
+        Map<Object, Object> map = new HashMap<>();
+        map.put("userDto", userDto);
+        map.put("phone", phone);
+        map.put("symbols", "app");
+        map.put("randomCode", verifyCode);
+        map.put("type", type);
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        GoodsAPI.getInstance().quickRegister(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<WxInfoBean> onQuickRegisterNextListener = new SubscriberOnNextListener<WxInfoBean>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(WxInfoBean wxInfoBean) {
+            hideLoadingDialog();
+            preference.putString(LifeSaverPreference.SESSION_ID, wxInfoBean.getSession_id());
+            preference.putString(LifeSaverPreference.ID, String.valueOf(wxInfoBean.getId()));
+            openActivityNotClose(MainActivity.class, null);
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+    SubscriberOnNextListener<HttpResult> onGetVerifyCodeNextListener = new SubscriberOnNextListener<HttpResult>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(HttpResult result) {
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            showToast(e.getMessage());
+            hideLoadingDialog();
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    /**
+     * 根据输入框的值显示不同的颜色
+     */
+    private void showColorWithInput() {
+        String regPhone = inputAccount.getText().toString().trim();
+        String regVerifyCode = editVerify.getText().toString().trim();
+        String regPassword = inputPassword.getText().toString().trim();
+        if (StringUtil.isEmpty(regPhone) || StringUtil.isEmpty(regVerifyCode) || StringUtil.isEmpty(regPassword)) {
+            btnSignUp.setClickable(false);
+            btnSignUp.setBackgroundResource(R.drawable.shape_register_button);
+        } else {
+            btnSignUp.setClickable(true);
+            btnSignUp.setBackgroundResource(R.drawable.bg_login_btn_selector);
+        }
+    }
+
+    /**
+     * 释放资源
+     */
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unsubscribe();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (downTimer != null) {
+            downTimer.cancel();
+            btnVerify.setClickable(true);
+            btnVerify.setText("获取验证码");
+        }
+    }
+}

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        layout="@layout/custom_toolbar" />
+
+    <Button
+        android:id="@+id/btnBackToHome"
+        style="@style/LoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:padding="12dp"
+        android:text="返回首页" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="260dp"
+                android:background="@drawable/card_confirm_step4">
+
+                <TextView
+                    android:id="@+id/activation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:text="生命宝卡激活流程"
+                    android:textColor="@color/color_main_text_black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/activation"
+                    android:paddingLeft="10dp"
+                    android:text="Activation card"
+                    android:textColor="@color/color_main_text_normal" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="卡号:" />
+
+                <TextView
+                    android:id="@+id/cardNum"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="10086" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="失效时间:" />
+
+                <TextView
+                    android:id="@+id/deadDate"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="2020年6月30日" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="持卡人:" />
+
+                <TextView
+                    android:id="@+id/userName"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="张三" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="绑定手机:" />
+
+                <TextView
+                    android:id="@+id/bindPhone"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="188888888888" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="身份证号码:" />
+
+                <TextView
+                    android:id="@+id/idNum"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="40581455451515" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="血型:" />
+
+                <TextView
+                    android:id="@+id/bloodType"
+                    style="@style/TextStyleOfActivitySuccessfully"
+                    android:text="O型" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="客服热线:"
+                    android:textColor="@color/color_main_text_normal"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/hot_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:gravity="center"
+                    android:text="@string/hot_line_of_company"
+                    android:textColor="@color/color_main_text_normal"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

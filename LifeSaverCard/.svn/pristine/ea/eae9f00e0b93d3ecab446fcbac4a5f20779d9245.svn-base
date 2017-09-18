@@ -1,0 +1,29 @@
+package com.byth.lifesaver.bean;
+
+/**
+ * Created by Administrator on 2017/8/23 0023.
+ * 支付结果bean
+ */
+
+public class PayResultBean {
+    private String orderCode;//订单号
+    private String goodsName;//商品描述
+    private String sum;//总额
+    private String payee;//收款方
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public String getSum() {
+        return sum;
+    }
+
+    public String getPayee() {
+        return payee;
+    }
+}

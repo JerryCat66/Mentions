@@ -1,0 +1,30 @@
+package com.byth.lifesaver.function.auth;
+
+import com.byth.lifesaver.base.FrameActivity;
+
+/**
+ * Created by Administrator on 2017/5/23 0023.
+ * 引导页
+ */
+
+public class SplashActivity extends FrameActivity {
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+}

@@ -1,0 +1,84 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/7/18 0018.
+ * 修改密码第一步
+ * 验证手机
+ */
+
+public class ActivityModifyPasswordStepOne extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.get_auth_code)
+    Button getAuthCode;
+    @InjectView(R.id.phone)
+    TextView phone;
+    @InjectView(R.id.code)
+    EditText code;
+    @InjectView(R.id.ok)
+    Button ok;
+    @InjectView(R.id.hot_line)
+    TextView servicePhone;
+    @InjectView(R.id.checkIdentity)
+    TextView tvCheckIdentity;
+    @InjectView(R.id.modifyPassword)
+    TextView tvModifyPassword;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_modify_psw_step1);
+        setToolbar(toolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        tvCheckIdentity.setBackgroundResource(R.drawable.selector_login_button);
+        tvCheckIdentity.setTextColor(getResources().getColor(R.color.white));
+        tvModifyPassword.setBackgroundResource(R.drawable.shape_with_check_logistic);
+        tvModifyPassword.setTextColor(getResources().getColor(R.color.color_main_text));
+    }
+
+    @Override
+    protected void initListener() {
+        getAuthCode.setOnClickListener(this);
+        ok.setOnClickListener(this);
+        servicePhone.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.get_auth_code:
+                break;
+            case R.id.ok:
+                openActivityNotClose(ActivityModifyPasswordStepTwo.class, null);
+                break;
+            case R.id.hot_line:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+}

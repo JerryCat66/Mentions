@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ef6b07</color>
+    <color name="colorPrimaryDark">#393a3f</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_secondary">#f79e3c</color>
+    <color name="role_yellow_gray">#48CFAD</color>
+    <color name="color_main">#ef6b07</color>
+    <color name="color_666666">#666666</color>
+    <color name="color_cccccc">#cccccc</color>
+    <color name="color_f7f7f7">#f7f7f7</color>
+</resources>

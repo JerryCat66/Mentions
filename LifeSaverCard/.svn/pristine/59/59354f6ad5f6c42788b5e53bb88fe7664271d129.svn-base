@@ -1,0 +1,97 @@
+package com.byth.lifesaver.function.card.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/6 0006.
+ * 选择支付方式
+ */
+
+public class ActivityChoosePayMethod extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.tvPayInfo)
+    TextView tvPayInfo;
+    @InjectView(R.id.radioGroup_payType)
+    RadioGroup rgPayType;
+    @InjectView(R.id.wx_radioBtn)
+    RadioButton rbWeixin;
+    @InjectView(R.id.alipay_radioBtn)
+    RadioButton rbAlipay;
+    @InjectView(R.id.submitPayBtn)
+    Button btnSubmit;
+    public static final int ORDER_PAY_WITH_WEICHAT = 1;//微信支付为1，支付宝支付为2，默认微信支付
+    public static final int ORDER_PAY_WITH_ALIPAY = 2;
+
+    private int payType = ORDER_PAY_WITH_WEICHAT;
+    private String pay;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+        Bundle bundle = getIntent().getExtras();
+        pay = bundle.getString("totalPrice");
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.acitivity_choose_payment_method);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        tvPayInfo.setText("向白云通航支付" + pay + "元");
+    }
+
+    @Override
+    protected void initListener() {
+        btnSubmit.setOnClickListener(this);
+        rgPayType.setOnCheckedChangeListener(checkedChangeListener);//radioButton添加适配器
+    }
+
+    private RadioGroup.OnCheckedChangeListener checkedChangeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            switch (checkedId) {
+                case R.id.wx_radioBtn:
+                    payType = ORDER_PAY_WITH_WEICHAT;
+                    break;
+                case R.id.alipay_radioBtn:
+                    payType = ORDER_PAY_WITH_ALIPAY;
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.submitPayBtn:
+                if (!rbWeixin.isChecked() && !rbAlipay.isChecked()) {
+                    showToast("请选择支付方式");
+                } else if (payType == ORDER_PAY_WITH_WEICHAT) {
+                    showToast("选择的是微信支付");
+                } else {
+                    showToast("选择的是支付宝支付");
+                }
+        }
+    }
+}

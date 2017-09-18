@@ -1,0 +1,27 @@
+package com.byth.lifesaver.bean;
+
+/**
+ * Created by Administrator on 2017/7/19 0019.
+ * 微信第三方sdk
+ */
+
+public class WxInfoBean {
+    private WeixinCodeDto weixinCodeDto;
+
+    public void setWeixinCodeDto(WeixinCodeDto weixinCodeDto) {
+        this.weixinCodeDto = weixinCodeDto;
+    }
+
+    public static class WeixinCodeDto {
+        private String code;
+        private String symbols;
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public void setSymbols(String symbols) {
+            this.symbols = symbols;
+        }
+    }
+}

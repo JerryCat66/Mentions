@@ -1,0 +1,299 @@
+package com.byth.lifesaver.function.card;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.MainActivity;
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.adapter.CardGridAdapter;
+import com.byth.lifesaver.api.GoodsAPI;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.bean.AddressListBean;
+import com.byth.lifesaver.bean.CardInfoBean;
+import com.byth.lifesaver.function.card.activity.ActivityCardDetail;
+import com.byth.lifesaver.function.card.activity.ActivityCardInfoConfirm;
+import com.byth.lifesaver.function.card.activity.ActivityCardReissue;
+import com.byth.lifesaver.function.card.activity.ActivityLifeSaverCardDetail;
+import com.byth.lifesaver.function.card.activity.ActivityRenewCard;
+import com.byth.lifesaver.function.card.activity.ActivityReportForLoss;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.byth.lifesaver.widget.MyGridView;
+import com.byth.lifesaver.widget.TipsDialog;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/5/31 0031.
+ * 生命宝卡片页面
+ */
+
+public class CardFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+    @InjectView(R.id.card_item_list)
+    ListView cardGrid;//下方list
+    @InjectView(R.id.out_of_date)
+    TextView tvOutOfDate;//到期日
+    @InjectView(R.id.state_card)
+    TextView tvState;//卡状态
+    @InjectView(R.id.user_name)
+    TextView tvUserName;//用户姓名
+    @InjectView(R.id.bind_phone)
+    TextView tvPhone;//电话号码
+    @InjectView(R.id.id_num)
+    TextView tvIdNum;//身份证号码
+    @InjectView(R.id.type_blood)
+    TextView tvTypeBlood;//血型
+    @InjectView(R.id.allergy_drug)
+    TextView tvAllergyDrug;//药物过敏史
+    @InjectView(R.id.medical_history)
+    TextView tvMedicalHistory;//病史
+    @InjectView(R.id.num_card)
+    TextView tvNumCard;//卡号
+    @InjectView(R.id.card_detail)
+    TextView tvDetail;//详情
+    private CardGridAdapter adapter;
+    private HttpSubscriber httpSubscriber;
+    private String lifeCardStatus;//卡状态
+    private Bundle bundle = new Bundle();
+    private volatile static CardFragment fragment;
+
+    public static CardFragment getInstance() {
+        if (fragment == null) {
+            synchronized (CardFragment.class) {
+                if (fragment == null) {
+                    fragment = new CardFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_card);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getCardInfo();
+    }
+
+    @Override
+    protected void initComponent() {
+        adapter = new CardGridAdapter(getActivity());
+        cardGrid.setAdapter(adapter);
+        setListViewHeightBasedOnChildren(cardGrid);
+        getCardInfo();
+
+    }
+
+    @Override
+    protected void initListener() {
+        cardGrid.setOnItemClickListener(this);
+        tvDetail.setOnClickListener(this);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    /**
+     * 获取卡详细信息
+     */
+    private void getCardInfo() {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onCardInfoNextListener);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        GoodsAPI.getInstance().getCardInfo(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<CardInfoBean> onCardInfoNextListener = new SubscriberOnNextListener<CardInfoBean>() {
+        @Override
+        public void onStart() {
+            ((MainActivity) getActivity()).showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(CardInfoBean cardInfoBean) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            tvOutOfDate.setText("失效时间:" + cardInfoBean.getExpiryDate());
+            tvUserName.setText("使用人:" + cardInfoBean.getNickName());
+            tvPhone.setText("绑定手机:" + cardInfoBean.getPhone());
+            tvIdNum.setText("身份证:" + cardInfoBean.getIdCode());
+            tvTypeBlood.setText("血型:" + cardInfoBean.getBloodType());
+            tvAllergyDrug.setText("过敏药物:" + cardInfoBean.getDrugAllergy());
+            tvMedicalHistory.setText("病史:" + cardInfoBean.getIllItem());
+            tvNumCard.setText("卡号" + cardInfoBean.getGoodsName());
+            lifeCardStatus = cardInfoBean.getLifeCardStatus();
+            if (lifeCardStatus.equals("default")) {
+                tvState.setVisibility(View.GONE);
+            } else if (lifeCardStatus.equals("expired")) {
+                tvState.setVisibility(View.VISIBLE);
+                tvState.setText("已失效");
+            } else if (lifeCardStatus.equals("toExpiry")) {
+                tvState.setVisibility(View.VISIBLE);
+                tvState.setText("即将失效");
+            }
+            bundle.putString("activeTime", cardInfoBean.getActiveTime());
+            bundle.putString("address", cardInfoBean.getAddress());
+            bundle.putString("bloodType", cardInfoBean.getBloodType());
+            bundle.putString("distribute", cardInfoBean.getDistribName());
+            bundle.putString("drugAllergy", cardInfoBean.getDrugAllergy());
+            bundle.putString("expiryDate", cardInfoBean.getExpiryDate());
+            bundle.putString("goodsName", cardInfoBean.getGoodsName());
+            bundle.putString("idCode", cardInfoBean.getIdCode());
+            bundle.putString("illItem", cardInfoBean.getIllItem());
+            bundle.putString("linkMan", cardInfoBean.getLinkman());
+            bundle.putString("relationShip", cardInfoBean.getRelationship());
+            bundle.putString("phone", cardInfoBean.getPhone());
+            bundle.putString("tel", cardInfoBean.getTel());
+            bundle.putInt("gender", cardInfoBean.getGender());
+            bundle.putString("nickName", cardInfoBean.getNickName());
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            ((MainActivity) getActivity()).hideLoadingDialog();
+        }
+    };
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.card_detail:
+                if (bundle != null) {
+                    openActivityNotClose(ActivityLifeSaverCardDetail.class, bundle);
+                } else {
+                    TipsDialog.makeDialog(getActivity(), "提示", "您还没有激活的卡片，立即激活？", "是", "否", new TipsDialog.onDialogListener() {
+                        @Override
+                        public void onOkClick() {
+                            openActivityNotClose(ActivityCardInfoConfirm.class, null);
+                        }
+
+                        @Override
+                        public void onCancelClick() {
+
+                        }
+                    }).show();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+
+    /**
+     * 动态设置listView高度
+     * 解决scrollView嵌套listView只显示第一条数据
+     *
+     * @param listView
+     */
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        // 获取ListView对应的Adapter
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+        int totalHeight = 0;
+        for (int i = 0, len = listAdapter.getCount(); i < len; i++) {
+            // listAdapter.getCount()返回数据项的数目
+            View listItem = listAdapter.getView(i, null, listView);
+            // 计算子项View 的宽高
+            listItem.measure(0, 0);
+            // 统计所有子项的总高度
+            totalHeight += listItem.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        // listView.getDividerHeight()获取子项间分隔符占用的高度
+        // params.height最后得到整个ListView完整显示需要的高度
+        listView.setLayoutParams(params);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                openActivityNotClose(ActivityCardDetail.class, null);//购买
+                break;
+            case 1://激活
+                openActivityNotClose(ActivityCardInfoConfirm.class, null);
+                break;
+            case 2://续费
+                openActivityNotClose(ActivityRenewCard.class, null);
+                break;
+            case 3://挂失
+                openActivityNotClose(ActivityReportForLoss.class, null);
+                break;
+            case 4://补办
+                openActivityNotClose(ActivityCardReissue.class, null);
+                break;
+        }
+    }
+
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+}

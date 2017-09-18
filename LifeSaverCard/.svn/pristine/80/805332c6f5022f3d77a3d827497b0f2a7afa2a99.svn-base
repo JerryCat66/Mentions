@@ -1,0 +1,111 @@
+package com.byth.lifesaver.api;
+
+import com.byth.lifesaver.api.request.GoodServiceRequest;
+import com.byth.lifesaver.bean.CardActiveSuccessBean;
+import com.byth.lifesaver.bean.CardDetailBean;
+import com.byth.lifesaver.bean.CardRenewBean;
+import com.byth.lifesaver.bean.CardRenewConfirmBean;
+import com.byth.lifesaver.bean.DefaultAddressBean;
+import com.byth.lifesaver.bean.GoodAddressBean;
+import com.byth.lifesaver.bean.GoodInfoBean;
+import com.byth.lifesaver.bean.WxInfoBean;
+import com.byth.lifesaver.http.HttpMethod;
+import com.byth.lifesaver.http.HttpResult;
+
+import java.util.Map;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscriber;
+
+/**
+ * Created by Administrator on 2017/6/28 0028.
+ * 商品信息API
+ */
+
+public class GoodsAPI extends HttpMethod {
+    private volatile static GoodsAPI goodsAPI;
+    private GoodServiceRequest request = retrofitBuild().create(GoodServiceRequest.class);
+
+    private GoodsAPI() {
+
+    }
+
+    public static GoodsAPI getInstance() {
+        if (goodsAPI == null) {
+            synchronized (GoodsAPI.class) {
+                if (goodsAPI == null) {
+                    goodsAPI = new GoodsAPI();
+                }
+            }
+        }
+        return goodsAPI;
+    }
+
+    //获取商品信息
+    public void getGoodsInfo(Subscriber<HttpResult<GoodInfoBean>> subscriber, Map<String, String> map) {
+        Observable observable = request.getGoodsInfo(map).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取默认地址
+    public void getDefaultAddress(Subscriber<HttpResult<GoodAddressBean>> subscriber, Map<String, String> map) {
+        Observable observable = request.getDefaultAddress(map).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取卡信息
+    public void getCardDetail(Subscriber<HttpResult<CardDetailBean>> subscriber, RequestBody body) {
+        Observable observable = request.getCardDetail(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //上传图片
+    public void uploadCardPic(Subscriber<HttpResult<CardActiveSuccessBean>> subscriber, MultipartBody.Part body) {
+        Observable observable = request.uploadCard(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取激活成功后的卡信息
+    public void getActiveSuccessInfo(Subscriber<HttpResult<CardActiveSuccessBean>> subscriber, RequestBody body) {
+        Observable observable = request.getCardActiveSuccessInfo(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //下单
+    public void getPurchaseInfo(Subscriber<HttpResult> subscriber, RequestBody body) {
+        Observable observable = request.getPurchaseInfo(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取微信登录用户信息
+    public void getWxLoginInfo(Subscriber<HttpResult<WxInfoBean>> subscriber, RequestBody body) {
+        Observable observable = request.getWxLoginInfo(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //快速注册
+    public void quickRegister(Subscriber<HttpResult<WxInfoBean>> subscriber, RequestBody body) {
+        Observable observable = request.quickRegister(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //绑定登录
+    public void loginBinding(Subscriber<HttpResult<WxInfoBean>> subscriber, RequestBody body) {
+        Observable observable = request.loginBinding(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //获取卡续费信息
+    public void getCardRenewInfo(Subscriber<HttpResult<CardRenewBean>> subscriber, RequestBody body) {
+        Observable observable = request.getCardRenewInfo(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+
+    //续费确认
+    public void getCardRenewConfirmInfo(Subscriber<HttpResult<CardRenewConfirmBean>> subscriber, RequestBody body) {
+        Observable observable = request.getCardRenewConfirmInfo(body).map(new HttpResultFunc());
+        toSubscribe(observable, subscriber);
+    }
+}

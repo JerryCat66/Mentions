@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/color_main"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextAppearance="@style/Toolbar.TitleText" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnCreateNewAddress"
+        android:layout_below="@+id/toolbar">
+
+        <com.byth.lifesaver.widget.refreshlayout.RefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+            <!-- <android.support.v7.widget.RecyclerView
+                 android:id="@+id/addressList"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:divider="@color/window_background"
+                 android:listSelector="@color/transparent" />-->
+            <ListView
+                android:id="@+id/addressList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@color/window_background"
+                android:dividerHeight="10dp"
+                android:listSelector="@color/transparent" />
+        </com.byth.lifesaver.widget.refreshlayout.RefreshLayout>
+    </FrameLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnCreateNewAddress"
+        style="@style/LoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:padding="12dp"
+        android:text="新建地址" />
+</RelativeLayout>

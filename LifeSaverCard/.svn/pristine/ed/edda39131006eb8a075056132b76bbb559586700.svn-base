@@ -1,0 +1,56 @@
+package com.byth.lifesaver.api;
+
+import com.fenguo.library.http.GsonRequest;
+import com.fenguo.library.http.JsonResponse;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by Administrator on 2017/6/6 0006.
+ * 登录注册等
+ */
+
+public class AuthAPI extends API {
+    private volatile static AuthAPI authAPI;
+
+    private AuthAPI() {
+
+    }
+
+    public static AuthAPI getInstance() {
+        if (authAPI == null) {
+            synchronized (AuthAPI.class) {
+                if (authAPI == null) {
+                    authAPI = new AuthAPI();
+                }
+            }
+        }
+        return authAPI;
+    }
+
+    /**
+     * 注册
+     */
+    private final String REGISTER_URL = url + "/extUser/user";
+
+    public void register(String loginName, String password, String confirmPwd, String phone, String validStr, GsonRequest.GsonListener<JsonResponse> listener) {
+        Map<String, String> map = new HashMap<>();
+        map.put("loginName", loginName);
+        map.put("password", password);
+        map.put("confirmPwd", confirmPwd);
+        map.put("phone", phone);
+        map.put("validStr", validStr);
+        doRequest(REGISTER_URL, map, listener);
+    }
+
+    private final String GET_REGISTER_CODE = url + "/SMS/getIdenCo";
+
+    public void getRegisterCode(String mobileNo, String type, GsonRequest.GsonListener<JsonResponse> listener) {
+        Map<String, String> map = new HashMap<>();
+        map.put("mobileNo", mobileNo);
+        map.put("type", type);
+        doRequest(GET_REGISTER_CODE, map, listener);
+    }
+
+}

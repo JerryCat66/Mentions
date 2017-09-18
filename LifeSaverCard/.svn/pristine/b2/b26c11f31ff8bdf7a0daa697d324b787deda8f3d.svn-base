@@ -1,0 +1,109 @@
+package com.byth.lifesaver.http;
+
+
+import com.byth.lifesaver.api.API;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.fenguo.library.util.Preference;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+
+/**
+ * Created by Administrator on 2017/6/20 0020.
+ * retrofit请求封装基类
+ */
+
+public class HttpMethod {
+    private static final int DEFAULT_TIMEOUT = 5;//5秒超时
+    private Preference preference = Preference.getInstance();
+    private Retrofit mRetrofit;
+
+    public HttpMethod() {
+
+    }
+
+    /**
+     * 单例构造http请求方法
+     *
+     * @return
+     */
+    public Retrofit retrofitBuild() {
+        /**
+         * 添加超时连接时间
+         */
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request().newBuilder()
+                                .addHeader("session_id", preference.getString(LifeSaverPreference.SESSION_ID))
+                                .addHeader("id", preference.getString(LifeSaverPreference.ID))
+                                .addHeader("operation_code", preference.getString(LifeSaverPreference.OPERATION_CODE))
+                                .build();
+                        return chain.proceed(request);
+                    } //下面是关键代码
+                })
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build();
+        mRetrofit = new Retrofit.Builder()
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(new Gson()))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .baseUrl(API.url)
+                .build();
+        return mRetrofit;
+    }
+
+    /**
+     * 观察者模式，把observable（被观察者）和subscriber (观察者)通过subscribe实现订阅关系
+     * 由于网络请求是耗时任务，所以我们必须添加线程管理
+     *
+     * @param observable
+     * @param subscriber
+     * @param <T>
+     */
+    public <T> void toSubscribe(Observable<T> observable, Subscriber<T> subscriber) {
+        /**
+         * 订阅和解除订阅都发生在io线程
+         * 返回数据改变ui发生在主线程
+         * 遵循链式设计，所以观察者订阅订阅者
+         */
+        observable.subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    /**
+     * 用来统一处理Http的resultCode,并将HttpResult的Data部分剥离出来返回给subscriber
+     * <p/>
+     * Subscriber真正需要的数据类型，也就是Data部分的数据类型
+     */
+    public class HttpResultFunc<T> implements Func1<HttpResult<T>, T> {
+        @Override
+        public T call(HttpResult<T> tHttpResult) {
+            if (!tHttpResult.isSuccess()) {
+                throw new ApiException(tHttpResult);
+            }
+            return tHttpResult.getData();
+        }
+    }
+
+
+}

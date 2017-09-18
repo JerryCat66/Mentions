@@ -1,0 +1,97 @@
+package com.byth.lifesaver.function.mine;
+
+import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.util.Eyes;
+import com.gyf.barlibrary.ImmersionBar;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/5/26 0026.
+ * 我的
+ */
+
+public class MineFragment extends BaseFragment {
+    @InjectView(R.id.avatar)
+    ImageView ivAvatar;
+    @InjectView(R.id.nickname)
+    TextView tvNickName;
+    @InjectView(R.id.appBar)
+    AppBarLayout appBarLayout;
+    @InjectView(R.id.collapsing_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+    @InjectView(R.id.toolbar)
+    Toolbar mToolBar;
+    private volatile static MineFragment fragment;
+
+    public MineFragment() {
+
+    }
+
+
+    public static MineFragment getInstance() {
+        if (fragment == null) {
+            synchronized (MineFragment.class) {
+                if (fragment == null) {
+                    fragment = new MineFragment();
+                }
+            }
+        }
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_mine);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        Eyes.setStatusBarColorForCollapsingToolbar(getActivity(), appBarLayout, collapsingToolbarLayout, mToolBar, ContextCompat.getColor(getActivity(), R.color.color_main));
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void immersionInit() {
+        ImmersionBar.with(getActivity())
+                .statusBarDarkFont(true)
+                .fitsSystemWindows(false)
+                .init();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+        ImmersionBar.with(getActivity()).destroy();
+    }
+}

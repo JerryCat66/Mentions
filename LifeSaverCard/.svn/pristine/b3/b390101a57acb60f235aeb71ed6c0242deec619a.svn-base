@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/custom_toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btnSave"
+        android:layout_below="@+id/toolbar"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@color/white">
+
+
+               <!-- <com.fenguo.library.view.RoundImageViewWithBorder
+                    android:id="@+id/avatar"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="25dp"
+                    android:gravity="center"
+                    android:src="@drawable/avatar_default"
+                    app:border_color="@color/white"
+                    app:border_width="2dp"
+                    app:circle="true" />-->
+
+                <cn.finalteam.galleryfinal.widget.GFImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="25dp"
+                    android:src="@drawable/avatar_default" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:src="@drawable/btn_detail" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="center"
+                    android:text="头像"
+                    android:textColor="@color/color_main_text_black"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:gravity="right|center"
+                    android:hint="白云小林" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="用户名" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvNickName"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/btn_detail"
+                    android:gravity="right|center"
+                    android:hint="白云小林" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="昵称" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvGender"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:gravity="right|center"
+                    android:hint="你猜" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="性别" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvIdCode"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:gravity="right|center"
+                    android:hint="666666666" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="身份证" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvPhoneNum"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:gravity="right|center"
+                    android:hint="666666666"
+                    android:maxLength="11" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="电话号码" />
+            </RelativeLayout>
+
+            <include layout="@layout/horizontal_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    style="@style/ProfileContentStyle"
+                    android:background="@null"
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/btn_detail"
+                    android:gravity="right|center"
+                    android:hint="不知道" />
+
+                <TextView
+                    style="@style/ProfileLabelStyle"
+                    android:text="地址" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/selector_login_button"
+        android:gravity="center"
+        android:text="保存"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+</RelativeLayout>

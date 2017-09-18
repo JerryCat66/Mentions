@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="num_year">
+        <item>1年</item>
+        <item>2年</item>
+        <item>3年</item>
+        <item>5年</item>
+    </string-array>
+    <string-array name="blood_type">
+        <item>A型</item>
+        <item>B型</item>
+        <item>O型</item>
+        <item>AB型</item>
+        <item>RH阴性型</item>
+    </string-array>
+    <string-array name="medical_history">
+        <item>无</item>
+        <item>糖尿病</item>
+        <item>哮喘</item>
+        <item>高血压</item>
+        <item>冠心病</item>
+        <item>系统性红斑狼疮</item>
+        <item>白血病</item>
+        <item>溶血病</item>
+    </string-array>
+    <string-array name="drug_allergy">
+        <item>无</item>
+        <item>青霉素</item>
+        <item>链霉素</item>
+        <item>卡那霉素</item>
+        <item>氨基苄青霉素</item>
+        <item>阿司匹林</item>
+        <item>普鲁卡因</item>
+        <item>磺胺噻唑</item>
+        <item>磺胺嘧啶</item>
+        <item>长效磺胺</item>
+        <item>复方新诺明</item>
+    </string-array>
+    <string-array name="choose_sex">
+        <item>男</item>
+        <item>女</item>
+    </string-array>
+    <string-array name="choose_relationship">
+        <item>父母</item>
+        <item>子女</item>
+        <item>夫妻</item>
+        <item>兄弟</item>
+        <item>兄妹</item>
+        <item>姐妹</item>
+        <item>其他</item>
+    </string-array>
+</resources>

@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/logout"
+        style="@style/BasisConfirmButtonStyle"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/logout_bg"
+        android:text="退出登录" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <include layout="@layout/custom_toolbar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <include layout="@layout/horizontal_line" />
+
+            <TextView
+                android:id="@+id/account"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/select_bg_hint"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:text="账户:张三"
+                android:textColor="@color/color_666666"
+                android:textSize="15sp" />
+
+            <include layout="@layout/horizontal_line" />
+
+            <TextView
+                android:id="@+id/modifyPassword"
+                style="@style/mineStyle"
+                android:drawableLeft="@drawable/mine_modify_pwd"
+                android:text="修改登录密码" />
+
+            <include layout="@layout/horizontal_line" />
+
+            <TextView
+                android:id="@+id/modifyPhoneNum"
+                style="@style/mineStyle"
+                android:drawableLeft="@drawable/mine_modify_pwd"
+                android:text="修改手机号码" />
+
+        </LinearLayout>
+
+        <include layout="@layout/horizontal_line" />
+
+    </LinearLayout>
+</RelativeLayout>

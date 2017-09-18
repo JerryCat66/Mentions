@@ -1,0 +1,186 @@
+package com.byth.lifesaver.function.mine.activity;
+
+import android.support.v7.widget.Toolbar;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.api.AuthAPI;
+import com.byth.lifesaver.base.FrameActivity;
+import com.byth.lifesaver.encrypt.AES256Cipher;
+import com.byth.lifesaver.http.ApiException;
+import com.byth.lifesaver.http.HttpResult;
+import com.byth.lifesaver.http.HttpSubscriber;
+import com.byth.lifesaver.http.SubscriberOnNextListener;
+import com.byth.lifesaver.util.LifeSaverPreference;
+import com.fenguo.library.util.JsonUtil;
+import com.fenguo.library.util.StringUtil;
+import com.gyf.barlibrary.ImmersionBar;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.InjectView;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+/**
+ * Created by Administrator on 2017/6/16 0016.
+ * 修改手机号码
+ * 原手机不能收到验证码
+ * 通过登录密码解除手机绑定
+ */
+
+public class ActivityModifyWithPassword extends FrameActivity implements View.OnClickListener {
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectView(R.id.loginPassword)
+    EditText edPassword;//密码
+    @InjectView(R.id.ok)
+    Button btnOk;
+    @InjectView(R.id.hot_line)
+    TextView tvServicePhone;
+    @InjectView(R.id.checkIdentity)
+    TextView tvCheckIdentity;
+    @InjectView(R.id.modifyPassword)
+    TextView tvModifyPassword;
+    @InjectView(R.id.cbPswVisible)
+    CheckBox cbPswVisible;
+    private String password;
+    private HttpSubscriber httpSubscriber;
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_modify_with_password);
+        setToolbar(mToolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+        tvCheckIdentity.setBackgroundResource(R.drawable.selector_login_button);
+        tvCheckIdentity.setTextColor(getResources().getColor(R.color.white));
+        tvCheckIdentity.setText("登录密码验证");
+        tvModifyPassword.setBackgroundResource(R.drawable.shape_with_check_logistic);
+        tvModifyPassword.setTextColor(getResources().getColor(R.color.color_main_text));
+        tvModifyPassword.setText("手机号码验证");
+    }
+
+    @Override
+    protected void initListener() {
+        btnOk.setOnClickListener(this);
+        tvServicePhone.setOnClickListener(this);
+        cbPswVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    edPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                } else {
+                    edPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                edPassword.setSelection(edPassword.length());
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ok:
+                checkRequire();
+                break;
+            case R.id.hot_line:
+                telPhone(getResources().getString(R.string.hot_line_of_company));
+                break;
+        }
+    }
+
+    /**
+     * 检查必填项
+     */
+    private void checkRequire() {
+        password = edPassword.getText().toString().trim();
+        if (StringUtil.isEmpty(password)) {
+            showToast("密码不能为空");
+        } else {
+            toNextStep(password);
+        }
+    }
+
+    /**
+     * 去到下一步
+     */
+    private void toNextStep(String password) {
+        unSub();
+        httpSubscriber = new HttpSubscriber(onModifyPhoneWithPsw);
+        Map<Object, Object> map = new HashMap<>();
+        map.put("id", StringUtil.toInt(preference.getString(LifeSaverPreference.ID)));
+        try {
+            map.put("password", AES256Cipher.AES_Encode(password));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(MediaType.parse("Content-Type, application/json"), JsonUtil.toJson(map));
+        AuthAPI.getInstance().modifyPhoneWithPsw(httpSubscriber, body);
+    }
+
+    SubscriberOnNextListener<HttpResult> onModifyPhoneWithPsw = new SubscriberOnNextListener<HttpResult>() {
+        @Override
+        public void onStart() {
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onNext(HttpResult httpResult) {
+            hideLoadingDialog();
+            openActivityNotClose(ActivityModifyPhoneStepTwo.class, null);
+        }
+
+        @Override
+        public void onApiError(ApiException e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onNetworkError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onOtherError(Throwable e) {
+            hideLoadingDialog();
+            showToast(e.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            hideLoadingDialog();
+        }
+    };
+
+    //解除订阅
+    private void unSub() {
+        if (httpSubscriber != null) {
+            httpSubscriber.unSubscribe();
+        }
+    }
+}
+

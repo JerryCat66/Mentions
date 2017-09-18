@@ -1,0 +1,118 @@
+package com.byth.lifesaver.util;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+import android.widget.ImageView;
+
+
+import com.byth.lifesaver.R;
+
+import net.tsz.afinal.FinalHttp;
+import net.tsz.afinal.http.AjaxCallBack;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+/**
+ * 广告图片下载
+ *
+ * 这个下载方式是，通过获取本地广告图片的配置文件中的下载地址，来下载广告图的。
+ * Created by Administrator on 2016/4/14.
+ */
+public class ADDownload {
+    private ImageView imageView; //　要是显示图片的ImageView
+    private FinalHttp finalHttp;
+
+    private String url = null;   // 图片保存的目录地址
+    private String name = null;  // 图片名字
+
+    public ADDownload(ImageView imageView){
+        this.imageView = imageView;
+
+    }
+
+    /**
+     * 下载广告图片
+     *
+     * @param filePath  图片要保存到的目录地址
+     * @param fileName  要保存图片名字
+     */
+    public void download(String filePath, String fileName) {
+
+        Log.i("suye","file: "+filePath + "fileName: "+fileName);
+        url = filePath;
+        name = fileName;
+
+        File file = new File(url + File.separator + name);
+        file.delete();
+        file = null;
+        finalHttp = new FinalHttp();
+        finalHttp.download(getImageConfig(url, name), url + File.separator + name, true, callbakc);
+    }
+
+    private AjaxCallBack<File> callbakc = new AjaxCallBack<File>() {
+        @Override
+        public void onFailure(Throwable t, int errorNo,String strMsg) {
+            super.onFailure(t, errorNo, strMsg);
+
+            System.out.println("-----> 从重新下载失败");
+        }
+
+        @Override
+        public void onSuccess(File t) {
+            super.onSuccess(t);
+            System.out.println("----> 从重新下载成功");
+
+            Bitmap b = BitmapFactory.decodeFile(url + File.separator + name);
+            if(b == null) {
+                imageView.setImageResource(R.drawable.ad_de);
+            }else {
+                imageView.setImageBitmap(b);
+            }
+        }
+    };
+
+
+    /**
+     * 获取图片的配置文件
+     *
+     * @param url  图片存放的目录
+     * @param name 图片名字
+     * @return
+     */
+    private String getImageConfig(String url, String name) {
+        String str = null;
+
+        File file = new File(url + File.separator + name.replace(".img", ".ini"));
+
+        FileInputStream fis = null;
+        byte[] b = null;
+        try {
+            fis = new FileInputStream(file);
+            b = new byte[fis.available()];
+            fis.read(b);
+            str = new String(b, "UTF-8");
+
+            return str;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            b = null;
+            file = null;
+            if(fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                fis = null;
+            }
+        }
+        return str;
+    }
+}

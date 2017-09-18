@@ -1,0 +1,38 @@
+package com.byth.lifesaver.function.card.activity;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.FrameActivity;
+import com.gyf.barlibrary.ImmersionBar;
+
+/**
+ * Created by Administrator on 2017/6/9 0009.
+ * 激活卡
+ * Step1:卡信息确认
+ * TODO
+ */
+
+public class ActivityCardInfoConfirm extends FrameActivity {
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        setContentView(R.layout.activity_card_info_confirm);
+        ImmersionBar.with(this)
+                .statusBarColor(R.color.color_main)
+                .fitsSystemWindows(true)
+                .init();
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+}

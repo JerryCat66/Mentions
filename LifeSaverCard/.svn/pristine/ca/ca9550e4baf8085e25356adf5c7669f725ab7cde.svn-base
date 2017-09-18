@@ -1,0 +1,19 @@
+package com.byth.lifesaver.bean;
+
+/**
+ * Created by Administrator on 2017/8/29 0029.
+ * 用户信息bean
+ */
+
+public class UserInfoBean {
+    private String session_id;
+    private int id;
+
+    public String getSession_id() {
+        return session_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+}

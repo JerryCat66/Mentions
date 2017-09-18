@@ -1,0 +1,102 @@
+package com.byth.lifesaver.function.card.fragment;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+
+import com.byth.lifesaver.R;
+import com.byth.lifesaver.base.BaseFragment;
+import com.byth.lifesaver.widget.MyWebView;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
+/**
+ * Created by Administrator on 2017/6/1 0001.
+ * 卡片详情下拉加载更多
+ */
+
+public class FragmentCardDetailNextPager extends BaseFragment {
+    @InjectView(R.id.rl_nextPager)
+    RelativeLayout rlNextPager;
+    @InjectView(R.id.nextPager_webView)
+    MyWebView myWebView;
+    @InjectView(R.id.progressbar)
+    ProgressBar mProgressBar;
+
+    public static FragmentCardDetailNextPager newInstance(Context context, int position) {
+        FragmentCardDetailNextPager fragmentCardDetailNextPager = new FragmentCardDetailNextPager();
+        return fragmentCardDetailNextPager;
+    }
+
+    @Override
+    protected void immersionInit() {
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = setContentView(inflater, R.layout.fragment_product_detail_next_pager);
+        ButterKnife.inject(view);
+        return view;
+    }
+
+    @Override
+    protected void receiveDataFromPreActivity() {
+
+    }
+
+    @Override
+    protected void initComponent() {
+        if (rlNextPager.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    public void initView() {
+
+    }
+
+    /**
+     * webView配置
+     *
+     * @param webView
+     */
+    private void setWebViewConfig(MyWebView webView, String url) {
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        webView.requestFocus();
+        settings.setSupportZoom(false);
+        settings.setDefaultTextEncodingName("utf-8");
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+        });
+        webView.loadUrl(url);
+    }
+}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/custom_toolbar" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center_horizontal"
+            android:text="支付金额"
+            android:textColor="@color/color_main_text_black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/payPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal"
+            android:text="￥9600"
+            android:textColor="@color/color_main_text_black"
+            android:textSize="30sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tvTradeObject"
+                style="@style/ProfileContentStyle"
+                android:background="@null"
+                android:gravity="right|center" />
+
+            <TextView
+                style="@style/ProfileLabelStyle"
+                android:text="交易对象" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tvTradeProduct"
+                style="@style/ProfileContentStyle"
+                android:background="@null"
+                android:gravity="right|center"
+                />
+
+            <TextView
+                style="@style/ProfileLabelStyle"
+                android:text="商品详情" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tvTradeTime"
+                style="@style/ProfileContentStyle"
+                android:background="@null"
+                android:gravity="right|center" />
+
+            <TextView
+                style="@style/ProfileLabelStyle"
+                android:text="交易时间" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tvTradeNum"
+                style="@style/ProfileContentStyle"
+                android:background="@null"
+                android:gravity="right|center" />
+
+            <TextView
+                style="@style/ProfileLabelStyle"
+                android:text="交易单号" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TextView
+                android:id="@+id/tvTradeRemark"
+                style="@style/ProfileContentStyle"
+                android:background="@null"
+                android:gravity="right|center"
+                android:maxLength="8"
+                android:text="白云通航" />
+
+            <TextView
+                style="@style/ProfileLabelStyle"
+                android:text="备注" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btnBack"
+        style="@style/LoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:padding="12dp"
+        android:text="返回" />
+</RelativeLayout>
